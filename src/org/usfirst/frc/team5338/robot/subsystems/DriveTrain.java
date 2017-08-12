@@ -7,6 +7,7 @@ import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain extends Subsystem {
 	private final CANTalon DRIVESTEERING1 = new CANTalon(11);
@@ -25,15 +26,16 @@ public class DriveTrain extends Subsystem {
 
 	public DriveTrain() {
 		super();
-		AnalogInput.setGlobalSampleRate(125000);
-		ENCODER1.setOversampleBits(4);
+		AnalogInput.setGlobalSampleRate(62500);
+		ENCODER1.setOversampleBits(2);
 		ENCODER1.setAverageBits(2);
-		ENCODER2.setOversampleBits(4);
+		ENCODER2.setOversampleBits(2);
 		ENCODER2.setAverageBits(2);
-		ENCODER3.setOversampleBits(4);
+		ENCODER3.setOversampleBits(2);
 		ENCODER3.setAverageBits(2);
-		ENCODER4.setOversampleBits(4);
+		ENCODER4.setOversampleBits(2);
 		ENCODER4.setAverageBits(2);
+		
 	}
 
 	@Override
@@ -42,13 +44,19 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void drive(OI oi) {
-		// TODO
-		if (oi.equals(OI.Button.TEST1)) {
-			drive(0,0,0,0,0.5,0.5,0.5,0.5);			
+		if (oi.get(OI.Button.TEST1)) {
+			drive(0.25,0,0.25,0,0.25,0,0.25,0);
+		}
+		else if (oi.get(OI.Button.TEST2)){
+			drive(0,0.25,0,0.25,0,0.25,0,0.25);
 		}
 		else {
-			drive(0,0,0,0,0,0,0,0);			
+			drive(0,0,0,0,0,0,0,0);
 		}
+		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageVoltage());
+		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageVoltage());
+		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageVoltage());
+		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageVoltage());
 	}
 	
 
