@@ -21,7 +21,7 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER1 = new AnalogInput(1);
 	private final AnalogInput ENCODER2 = new AnalogInput(2);
 	private final AnalogInput ENCODER3 = new AnalogInput(3);
-	private final AnalogInput ENCODER4 = new AnalogInput(4); 
+	private final AnalogInput ENCODER4 = new AnalogInput(4);
 
 	public DriveTrain() {
 		super();

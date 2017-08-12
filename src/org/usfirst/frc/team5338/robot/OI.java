@@ -48,7 +48,7 @@ public class OI {
 			return joystickDeadZone(joyL.getRawAxis(1));
 		case "Y":
 			return joystickDeadZone(joyL.getRawAxis(2));
-		case "Rot":
+		case "Z":
 			return joystickDeadZone(joyL.getRawAxis(3));
 		default:
 			return 0.0;
@@ -61,7 +61,7 @@ public class OI {
 			return joystickDeadZone(joyR.getRawAxis(1));
 		case "Y":
 			return joystickDeadZone(joyR.getRawAxis(2));
-		case "Rot":
+		case "Z":
 			return joystickDeadZone(joyR.getRawAxis(3));
 		default:
 			return 0.0;
