@@ -1,7 +1,6 @@
 package org.usfirst.frc.team5338.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 import org.usfirst.frc.team5338.robot.subsystems.DriveTrain;
