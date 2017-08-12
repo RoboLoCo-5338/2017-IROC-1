@@ -53,7 +53,7 @@ public class DriveTrain extends Subsystem {
 		else {
 			drive(0,0,0,0,0,0,0,0);
 		}
-		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageVoltage());
+		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageValue());
 		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageVoltage());
 		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageVoltage());
 		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageVoltage());
