@@ -43,12 +43,14 @@ public class DriveTrain extends Subsystem {
 
 	public void drive(OI oi) {
 		// TODO
-		drive(0,0,0,0,0,0,0,0);
-		//if (oi.equals(OI.Button.TEST1)) {
-			//drive(0.1,0,0.1,0,0,0,0,0);
-			
-		//}
+		if (oi.equals(OI.Button.TEST1)) {
+			drive(0,0,0,0,0.5,0.5,0.5,0.5);			
+		}
+		else {
+			drive(0,0,0,0,0,0,0,0);			
+		}
 	}
+	
 
 	public void drive(double motor1, double steering1, double motor2, double steering2, double motor3, double steering3,
 			double motor4, double steering4) {
