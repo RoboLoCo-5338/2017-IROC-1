@@ -35,7 +35,7 @@ public class DriveTrain extends Subsystem {
 		ENCODER3.setAverageBits(2);
 		ENCODER4.setOversampleBits(2);
 		ENCODER4.setAverageBits(2);
-		
+
 	}
 
 	@Override
@@ -46,20 +46,17 @@ public class DriveTrain extends Subsystem {
 	public void drive(OI oi) {
 		if (oi.get(OI.Button.TEST1)) {
 			double amt = oi.getLeft("Y");
-			drive(amt,0,amt,0,amt,0,amt,0);
-		}
-		else if (oi.get(OI.Button.TEST2)){
-			drive(0,0.25,0,0.25,0,0.25,0,0.25);
-		}
-		else {
-			drive(0,0,0,0,0,0,0,0);
+			drive(amt, 0, amt, 0, amt, 0, amt, 0);
+		} else if (oi.get(OI.Button.TEST2)) {
+			drive(0, 0.25, 0, 0.25, 0, 0.25, 0, 0.25);
+		} else {
+			drive(0, 0, 0, 0, 0, 0, 0, 0);
 		}
 		SmartDashboard.putNumber("ENCODER1", ENCODER1.getValue());
 		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageVoltage());
 		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageBits());
 		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
 	}
-	
 
 	public void drive(double motor1, double steering1, double motor2, double steering2, double motor3, double steering3,
 			double motor4, double steering4) {

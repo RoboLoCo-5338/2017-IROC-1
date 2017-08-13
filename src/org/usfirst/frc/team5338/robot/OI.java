@@ -3,8 +3,8 @@ package org.usfirst.frc.team5338.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class OI {
-	private final static Joystick joyL = new Joystick(0);
-	private final static Joystick joyR = new Joystick(1);
+	private final static Joystick joystickLeft = new Joystick(0);
+	private final static Joystick joystickRight = new Joystick(1);
 
 	public enum Button {
 		TEST1, TEST2
@@ -15,9 +15,9 @@ public class OI {
 
 	public static Joystick getJoystick(int n) {
 		if (n == 0)
-			return joyL;
+			return joystickLeft;
 		else if (n == 1)
-			return joyR;
+			return joystickRight;
 		else
 			return null;
 	}
@@ -25,9 +25,9 @@ public class OI {
 	public boolean get(Button button) {
 		switch (button) {
 		case TEST1:
-			return joyR.getRawButton(1);
+			return joystickLeft.getRawButton(1);
 		case TEST2:
-			return joyL.getRawButton(1);
+			return joystickRight.getRawButton(1);
 		default:
 			return false;
 		}
@@ -45,11 +45,11 @@ public class OI {
 	public double getLeft(String input) {
 		switch (input) {
 		case "X":
-			return joystickDeadZone(joyL.getRawAxis(1));
+			return joystickDeadZone(joystickLeft.getRawAxis(1));
 		case "Y":
-			return joystickDeadZone(joyL.getRawAxis(2));
+			return joystickDeadZone(joystickLeft.getRawAxis(2));
 		case "Z":
-			return joystickDeadZone(joyL.getRawAxis(3));
+			return joystickDeadZone(joystickLeft.getRawAxis(3));
 		default:
 			return 0.0;
 		}
@@ -58,11 +58,11 @@ public class OI {
 	public double getRight(String input) {
 		switch (input) {
 		case "X":
-			return joystickDeadZone(joyR.getRawAxis(1));
+			return joystickDeadZone(joystickRight.getRawAxis(1));
 		case "Y":
-			return joystickDeadZone(joyR.getRawAxis(2));
+			return joystickDeadZone(joystickRight.getRawAxis(2));
 		case "Z":
-			return joystickDeadZone(joyR.getRawAxis(3));
+			return joystickDeadZone(joystickRight.getRawAxis(3));
 		default:
 			return 0.0;
 		}
