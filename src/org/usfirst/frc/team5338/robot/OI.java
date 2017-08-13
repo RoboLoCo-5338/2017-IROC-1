@@ -3,8 +3,8 @@ package org.usfirst.frc.team5338.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class OI {
-	private final Joystick joyL = new Joystick(0);
-	private final Joystick joyR = new Joystick(1);
+	private final static Joystick joyL = new Joystick(0);
+	private final static Joystick joyR = new Joystick(1);
 
 	public enum Button {
 		TEST1, TEST2
@@ -13,7 +13,7 @@ public class OI {
 	public OI() {
 	}
 
-	public Joystick getJoystick(int n) {
+	public static Joystick getJoystick(int n) {
 		if (n == 0)
 			return joyL;
 		else if (n == 1)

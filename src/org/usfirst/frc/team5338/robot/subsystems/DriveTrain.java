@@ -45,7 +45,8 @@ public class DriveTrain extends Subsystem {
 
 	public void drive(OI oi) {
 		if (oi.get(OI.Button.TEST1)) {
-			drive(0.25,0,0.25,0,0.25,0,0.25,0);
+			double amt = oi.getLeft("Y");
+			drive(amt,0,amt,0,amt,0,amt,0);
 		}
 		else if (oi.get(OI.Button.TEST2)){
 			drive(0,0.25,0,0.25,0,0.25,0,0.25);
@@ -53,10 +54,10 @@ public class DriveTrain extends Subsystem {
 		else {
 			drive(0,0,0,0,0,0,0,0);
 		}
-		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageValue());
+		SmartDashboard.putNumber("ENCODER1", ENCODER1.getValue());
 		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageVoltage());
-		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageVoltage());
-		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageVoltage());
+		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageBits());
+		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
 	}
 	
 
