@@ -25,6 +25,8 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER3 = new AnalogInput(2);
 	private final AnalogInput ENCODER4 = new AnalogInput(3);
 
+	double[] centers = { 1.539, 4.312, 0.529, 0.644 };
+
 	public DriveTrain() {
 		super();
 		AnalogInput.setGlobalSampleRate(62500);
@@ -57,7 +59,7 @@ public class DriveTrain extends Subsystem {
 		// drive(0, 0, 0, 0, 0, 0, 0, 0);
 		// }
 
-		moveto(270.0);
+		moveto(70.0);
 
 		// double input = oi.getDirectionDegrees(1);
 		// double output = (5.0 / 360.0) * input;
@@ -84,23 +86,46 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void moveto(double dir) {
-		
-		SmartDashboard.putNumber("movedTo", 0);
-		double ec1 = ENCODER1.getVoltage() + 0.0;
-		ec1 = (ec1 * 72) + dir % 360.0;
-		// double ec2 = ENCODER2.getVoltage() + /*constant*/;
-		// ec2 = (ec2 * 72) + dir % 360.0;
-		// double ec3 = ENCODER3.getVoltage() + /*constant*/;
-		// ec3 = (ec3 * 72) + dir % 360.0;
-		// double ec4 = ENCODER4.getVoltage() + /*constant*/;
-		// ec4 = (ec4 * 72) + dir % 360.0;
-		if (ec1 > dir + 0.5) {
-			DRIVESTEERING1.set(-0.1); // Left
-		} else if (ec1 < dir - 0.5) {
-			DRIVESTEERING1.set(0.1); // Right
-		} else {
+		// SmartDashboard.putNumber("movedTo", 0);
+		// double ec1 = ENCODER1.getVoltage() + 0.0;
+		// ec1 = (ec1 * 72) + dir % 360.0;
+		// // double ec2 = ENCODER2.getVoltage() + /*constant*/;
+		// // ec2 = (ec2 * 72) + dir % 360.0;
+		// // double ec3 = ENCODER3.getVoltage() + /*constant*/;
+		// // ec3 = (ec3 * 72) + dir % 360.0;
+		// // double ec4 = ENCODER4.getVoltage() + /*constant*/;
+		// // ec4 = (ec4 * 72) + dir % 360.0;
+		// if (ec1 > dir + 0.5) {
+		// DRIVESTEERING1.set(-0.5); // Left
+		// } else if (ec1 < dir - 0.5) {
+		// DRIVESTEERING1.set(0.5); // Right
+		// } else {
+		// DRIVESTEERING1.set(0);
+		// }
+		if (ENCODER1.getAverageVoltage() < centers[0] - 0.1)
+			DRIVESTEERING1.set(-.25);
+		else if (ENCODER1.getAverageVoltage() > centers[0] + 0.1)
+			DRIVESTEERING1.set(.25);
+		else
 			DRIVESTEERING1.set(0);
-		}
+		if (ENCODER2.getAverageVoltage() < centers[1] - 0.1)
+			DRIVESTEERING2.set(-.25);
+		else if (ENCODER2.getAverageVoltage() > centers[1] + 0.1)
+			DRIVESTEERING2.set(.25);
+		else
+			DRIVESTEERING2.set(0);
+		if (ENCODER3.getAverageVoltage() < centers[2] - 0.1)
+			DRIVESTEERING3.set(-.25);
+		else if (ENCODER3.getAverageVoltage() > centers[2] + 0.1)
+			DRIVESTEERING3.set(.25);
+		else
+			DRIVESTEERING3.set(0);
+		if (ENCODER4.getAverageVoltage() < centers[3] - 0.1)
+			DRIVESTEERING4.set(-.25);
+		else if (ENCODER4.getAverageVoltage() > centers[3] + 0.1)
+			DRIVESTEERING4.set(.25);
+		else
+			DRIVESTEERING4.set(0);
 
 	}
 
