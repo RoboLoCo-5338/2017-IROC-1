@@ -20,10 +20,10 @@ public class DriveTrain extends Subsystem {
 	private final CANTalon DRIVESTEERING4 = new CANTalon(41);
 	private final CANTalon DRIVEMOTOR4 = new CANTalon(42);
 
-	private final AnalogInput ENCODER1 = new AnalogInput(1);
-	private final AnalogInput ENCODER2 = new AnalogInput(2);
-	private final AnalogInput ENCODER3 = new AnalogInput(3);
-	private final AnalogInput ENCODER4 = new AnalogInput(4);
+	private final AnalogInput ENCODER1 = new AnalogInput(0);
+	private final AnalogInput ENCODER2 = new AnalogInput(1);
+	private final AnalogInput ENCODER3 = new AnalogInput(2);
+	private final AnalogInput ENCODER4 = new AnalogInput(3);
 
 	public DriveTrain() {
 		super();
@@ -39,34 +39,69 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public static void initSensors() {
-		
+
 	}
-	
+
 	@Override
 	public void initDefaultCommand() {
 		setDefaultCommand(new SwerveDriveWithJoysticks());
 	}
-	
-	
-	
+
 	public void drive(OI oi) {
-		if (oi.get(OI.Button.TEST1)) {
-			double amt = oi.getLeft("Y");
-			drive(amt, 0, amt, 0, amt, 0, amt, 0);
-		} else if (oi.get(OI.Button.TEST2)) {
-			drive(0, 0.25, 0, 0.25, 0, 0.25, 0, 0.25);
+		// if (oi.get(OI.Button.TEST1)) {
+		// double amt = oi.getLeft("Y");
+		// drive(amt, 0, amt, 0, amt, 0, amt, 0);
+		// } else if (oi.get(OI.Button.TEST2)) {
+		// drive(0, 0.25, 0, 0.25, 0, 0.25, 0, 0.25);
+		// } else {
+		// drive(0, 0, 0, 0, 0, 0, 0, 0);
+		// }
+
+		moveto(270.0);
+
+		// double input = oi.getDirectionDegrees(1);
+		// double output = (5.0 / 360.0) * input;
+		// double amt = oi.getLeft("Y");
+		// if (ENCODER1.getVoltage() < output)
+		// drive(amt, 10, 0, 0, 0, 0, 0, 0);
+		SmartDashboard.putNumber("ENCODER1", ENCODER1.getVoltage());
+		SmartDashboard.putNumber("ENCODER2", ENCODER2.getVoltage());
+		SmartDashboard.putNumber("ENCODER3", ENCODER3.getVoltage());
+		SmartDashboard.putNumber("ENCODER4", ENCODER4.getVoltage());
+
+		// double ec1 = ENCODER1.getAverageVoltage();
+		// double ec1c = 2.5;
+		// if (ec1 > ec1c + 0.01) {
+		// DRIVESTEERING1.set(-0.1); //Left
+		// }
+		// else if (ec1 < ec1c - 0.01) {
+		// DRIVESTEERING1.set(0.1); //Right
+		// }
+		// else {
+		// DRIVESTEERING1.set(0);
+		// }
+
+	}
+
+	public void moveto(double dir) {
+		
+		SmartDashboard.putNumber("movedTo", 0);
+		double ec1 = ENCODER1.getVoltage() + 0.0;
+		ec1 = (ec1 * 72) + dir % 360.0;
+		// double ec2 = ENCODER2.getVoltage() + /*constant*/;
+		// ec2 = (ec2 * 72) + dir % 360.0;
+		// double ec3 = ENCODER3.getVoltage() + /*constant*/;
+		// ec3 = (ec3 * 72) + dir % 360.0;
+		// double ec4 = ENCODER4.getVoltage() + /*constant*/;
+		// ec4 = (ec4 * 72) + dir % 360.0;
+		if (ec1 > dir + 0.5) {
+			DRIVESTEERING1.set(-0.1); // Left
+		} else if (ec1 < dir - 0.5) {
+			DRIVESTEERING1.set(0.1); // Right
 		} else {
-			drive(0, 0, 0, 0, 0, 0, 0, 0);
+			DRIVESTEERING1.set(0);
 		}
-		
-		double input = oi.getDirectionDegrees(0);
-		double output = (4096.0/360.0) * input;
-		
-		
-		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageValue());
-		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageValue());
-		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageValue());
-		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
+
 	}
 
 	public void drive(double motor1, double steering1, double motor2, double steering2, double motor3, double steering3,
