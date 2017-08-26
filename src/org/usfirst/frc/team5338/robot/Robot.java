@@ -11,7 +11,9 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
+		DriveTrain.initSensors();
 	}
+	
 
 	@Override
 	public void autonomousInit() {

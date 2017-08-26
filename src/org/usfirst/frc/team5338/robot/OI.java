@@ -67,4 +67,15 @@ public class OI {
 			return 0.0;
 		}
 	}
+
+	public double getDirectionDegrees(int n) {
+		switch (n) {
+		case 0:
+			return joystickLeft.getDirectionDegrees();
+		case 1:
+			return joystickRight.getDirectionDegrees();
+		default:
+			return 0.0;
+		}
+	}
 }

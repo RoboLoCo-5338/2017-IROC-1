@@ -6,6 +6,7 @@ import org.usfirst.frc.team5338.robot.commands.SwerveDriveWithJoysticks;
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -35,14 +36,19 @@ public class DriveTrain extends Subsystem {
 		ENCODER3.setAverageBits(2);
 		ENCODER4.setOversampleBits(2);
 		ENCODER4.setAverageBits(2);
-
 	}
 
+	public static void initSensors() {
+		
+	}
+	
 	@Override
 	public void initDefaultCommand() {
 		setDefaultCommand(new SwerveDriveWithJoysticks());
 	}
-
+	
+	
+	
 	public void drive(OI oi) {
 		if (oi.get(OI.Button.TEST1)) {
 			double amt = oi.getLeft("Y");
@@ -52,9 +58,14 @@ public class DriveTrain extends Subsystem {
 		} else {
 			drive(0, 0, 0, 0, 0, 0, 0, 0);
 		}
-		SmartDashboard.putNumber("ENCODER1", ENCODER1.getValue());
-		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageVoltage());
-		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageBits());
+		
+		double input = oi.getDirectionDegrees(0);
+		double output = (4096.0/360.0) * input;
+		
+		
+		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageValue());
+		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageValue());
+		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageValue());
 		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
 	}
 
