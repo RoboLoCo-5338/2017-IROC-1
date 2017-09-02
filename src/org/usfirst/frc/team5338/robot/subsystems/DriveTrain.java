@@ -103,16 +103,16 @@ public class DriveTrain extends Subsystem {
 	public double getEncoderVal(AnalogInput encoder) {
 		int[] defaults = {52014,55990,47285,8454}; 
 		if (encoder.equals(ENCODER1)) { 
-			return (((encoder.getAverageValue()+defaults[0])/65535.0)*360.0)%360;	
+			return (((encoder.getAverageValue()+defaults[0])%65536)/65535.0)*360.0;	
 		}
 		else if (encoder.equals(ENCODER2)) { 
-			return (((encoder.getAverageValue()+defaults[1])/65535.0)*360.0)%360;	
+			return (((encoder.getAverageValue()+defaults[1])%65536)/65535.0)*360.0;	
 		}
 		else if (encoder.equals(ENCODER3)) { 
-			return (((encoder.getAverageValue()+defaults[2])/65535.0)*360.0)%360;	
+			return (((encoder.getAverageValue()+defaults[2])%65536)/65535.0)*360.0;	
 		}
 		else if (encoder.equals(ENCODER4)) { 
-			return (((encoder.getAverageValue()+defaults[3])/65535.0)*360.0)%360;	
+			return (((encoder.getAverageValue()+defaults[3])%65536)/65535.0)*360.0;	
 		}
 		else {
 			return -1.0;
