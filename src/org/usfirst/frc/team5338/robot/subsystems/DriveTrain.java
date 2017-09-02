@@ -6,6 +6,9 @@ import org.usfirst.frc.team5338.robot.commands.SwerveDriveWithJoysticks;
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -25,6 +28,11 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER2 = new AnalogInput(1);
 	private final AnalogInput ENCODER3 = new AnalogInput(2);
 	private final AnalogInput ENCODER4 = new AnalogInput(3);
+
+	PIDController pid1 = new PIDController(0.125, 0, 0, new EncoderPID(1), DRIVESTEERING1, .001);
+	PIDController pid2 = new PIDController(.0025, 0, 0, new EncoderPID(2), DRIVESTEERING2, .005);
+	PIDController pid3 = new PIDController(.0025, 0, 0, new EncoderPID(3), DRIVESTEERING3, .005);
+	PIDController pid4 = new PIDController(.0025, 0, 0, new EncoderPID(4), DRIVESTEERING4, .005);
 
 	double[] centers = { 52456.0, 56494.0, 47344.0, 9080.0 }; // don't use.
 
@@ -46,6 +54,31 @@ public class DriveTrain extends Subsystem {
 		DRIVESTEERING2.setInverted(true);
 		DRIVESTEERING3.setInverted(true);
 		DRIVESTEERING4.setInverted(true);
+
+		pid1.setInputRange(0, 360);
+		pid1.setContinuous(true);
+		pid1.setOutputRange(-.5, .5);
+		pid1.setSetpoint(getEncoderVal(1));
+		pid1.enable();
+
+		pid2.setInputRange(0, 360);
+		pid2.setContinuous(true);
+		pid2.setOutputRange(-.4, .4);
+		pid2.setSetpoint(getEncoderVal(2));
+		// pid2.enable();
+
+		pid3.setInputRange(0, 360);
+		pid3.setContinuous(true);
+		pid3.setOutputRange(-.4, .4);
+		pid3.setSetpoint(getEncoderVal(3));
+		// pid3.enable();
+
+		pid4.setInputRange(0, 360);
+		pid4.setContinuous(true);
+		pid4.setOutputRange(-.4, .4);
+		pid4.setSetpoint(getEncoderVal(4));
+		// pid4.enable();
+
 	}
 
 	// Sets the default command to run during teleop to joystick driving.
@@ -59,39 +92,19 @@ public class DriveTrain extends Subsystem {
 		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageValue());
 		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageValue());
 		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
-		SmartDashboard.putNumber("Angle:ENCODER1", getEncoderVal(ENCODER1));
-		SmartDashboard.putNumber("Angle:ENCODER2", getEncoderVal(ENCODER2));
-		SmartDashboard.putNumber("Angle:ENCODER3", getEncoderVal(ENCODER3));
-		SmartDashboard.putNumber("Angle:ENCODER4", getEncoderVal(ENCODER4));
+		SmartDashboard.putNumber("Angle:ENCODER1", getEncoderVal(1));
+		SmartDashboard.putNumber("Angle:ENCODER2", getEncoderVal(2));
+		SmartDashboard.putNumber("Angle:ENCODER3", getEncoderVal(3));
+		SmartDashboard.putNumber("Angle:ENCODER4", getEncoderVal(4));
+		SmartDashboard.putNumber("PIDInput", pid1.getError());
 
-	}
+		double angle = oi.getLeft('A');
+		pid1.setSetpoint(180);
+		pid2.setSetpoint(180);
+		pid3.setSetpoint(180);
+		pid4.setSetpoint(180);
 
-	public void moveto(double dir) {
-
-		if (ENCODER1.getAverageVoltage() < centers[0] - 0.1)
-			DRIVESTEERING1.set(-.25);
-		else if (ENCODER1.getAverageVoltage() > centers[0] + 0.1)
-			DRIVESTEERING1.set(.25);
-		else
-			DRIVESTEERING1.set(0);
-		if (ENCODER2.getAverageVoltage() < centers[1] - 0.1)
-			DRIVESTEERING2.set(-.25);
-		else if (ENCODER2.getAverageVoltage() > centers[1] + 0.1)
-			DRIVESTEERING2.set(.25);
-		else
-			DRIVESTEERING2.set(0);
-		if (ENCODER3.getAverageVoltage() < centers[2] - 0.1)
-			DRIVESTEERING3.set(-.25);
-		else if (ENCODER3.getAverageVoltage() > centers[2] + 0.1)
-			DRIVESTEERING3.set(.25);
-		else
-			DRIVESTEERING3.set(0);
-		if (ENCODER4.getAverageVoltage() < centers[3] - 0.1)
-			DRIVESTEERING4.set(-.25);
-		else if (ENCODER4.getAverageVoltage() > centers[3] + 0.1)
-			DRIVESTEERING4.set(.25);
-		else
-			DRIVESTEERING4.set(0);
+		SmartDashboard.putNumber("Joystick Angle", angle);
 
 	}
 
@@ -108,20 +121,16 @@ public class DriveTrain extends Subsystem {
 		DRIVEMOTOR4.set(motor4);
 	}
 
-	public static void initSensors() {
-		// TODO Auto-generated method stub
-	}
-
-	public double getEncoderVal(AnalogInput encoder) {
+	public double getEncoderVal(int encoder) {
 		int[] defaults = { 52021, 47665, 56888, 8903 };
-		if (encoder.equals(ENCODER1)) {
-			return (((encoder.getAverageValue() - defaults[0] + 65535) % 65536) / 65535.0) * 360.0;
-		} else if (encoder.equals(ENCODER2)) {
-			return (((encoder.getAverageValue() - defaults[1] + 65535) % 65536) / 65535.0) * 360.0;
-		} else if (encoder.equals(ENCODER3)) {
-			return (((encoder.getAverageValue() - defaults[2] + 65535) % 65536) / 65535.0) * 360.0;
-		} else if (encoder.equals(ENCODER4)) {
-			return (((encoder.getAverageValue() - defaults[3] + 65535) % 65536) / 65535.0) * 360.0;
+		if (encoder == 1) {
+			return (((ENCODER1.getAverageValue() - defaults[0] + 65535) % 65536) / 65535.0) * 360.0;
+		} else if (encoder == 2) {
+			return (((ENCODER2.getAverageValue() - defaults[1] + 65535) % 65536) / 65535.0) * 360.0;
+		} else if (encoder == 3) {
+			return (((ENCODER3.getAverageValue() - defaults[2] + 65535) % 65536) / 65535.0) * 360.0;
+		} else if (encoder == 4) {
+			return (((ENCODER4.getAverageValue() - defaults[3] + 65535) % 65536) / 65535.0) * 360.0;
 		} else {
 			return -1.0;
 		}
@@ -129,12 +138,12 @@ public class DriveTrain extends Subsystem {
 
 	double scaleInput(double dVal) {
 		double[] scaleArray = new double[360];
-		for (int i = 0; i < scaleArray.length; i++) {
+		for (int i = 0; i < scaleArray.length; i += 2) {
 			scaleArray[i] = (double) i;
 		}
 
 		// get the corresponding index for the scaleInput array.
-		int index = (int) (dVal * 360.0);
+		int index = (int) (dVal * scaleArray.length);
 		if (index < 0) {
 			index = -index;
 		} else if (index > 360) {
@@ -149,6 +158,31 @@ public class DriveTrain extends Subsystem {
 		}
 
 		return dScale;
+	}
+
+	class EncoderPID implements PIDSource {
+
+		public int encoder;
+
+		public EncoderPID(int encoder) {
+			this.encoder = encoder;
+		}
+
+		@Override
+		public void setPIDSourceType(PIDSourceType pidSource) {
+			ENCODER1.setPIDSourceType(pidSource);
+		}
+
+		@Override
+		public PIDSourceType getPIDSourceType() {
+			return ENCODER1.getPIDSourceType();
+		}
+
+		@Override
+		public double pidGet() {
+			return getEncoderVal(encoder);
+		}
+
 	}
 
 }
