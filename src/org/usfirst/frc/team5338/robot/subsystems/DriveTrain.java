@@ -50,12 +50,12 @@ public class DriveTrain extends Subsystem {
 
 	public void drive(OI oi) {
 
-		moveto(70.0);
+		//moveto(70.0);
 
-		SmartDashboard.putNumber("ENCODER1", ENCODER1.getVoltage());
-		SmartDashboard.putNumber("ENCODER2", ENCODER2.getVoltage());
-		SmartDashboard.putNumber("ENCODER3", ENCODER3.getVoltage());
-		SmartDashboard.putNumber("ENCODER4", ENCODER4.getVoltage());
+		SmartDashboard.putNumber("ENCODER1", getEncoderVal(ENCODER1));
+		SmartDashboard.putNumber("ENCODER2", getEncoderVal(ENCODER2));
+		SmartDashboard.putNumber("ENCODER3", getEncoderVal(ENCODER3));
+		SmartDashboard.putNumber("ENCODER4", getEncoderVal(ENCODER4));
 
 	}
 
