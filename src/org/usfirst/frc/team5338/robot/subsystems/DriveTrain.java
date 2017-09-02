@@ -52,10 +52,14 @@ public class DriveTrain extends Subsystem {
 
 		//moveto(70.0);
 
-		SmartDashboard.putNumber("ENCODER1", getEncoderVal(ENCODER1));
-		SmartDashboard.putNumber("ENCODER2", getEncoderVal(ENCODER2));
-		SmartDashboard.putNumber("ENCODER3", getEncoderVal(ENCODER3));
-		SmartDashboard.putNumber("ENCODER4", getEncoderVal(ENCODER4));
+		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageValue());
+		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageValue());
+		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageValue());
+		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
+		SmartDashboard.putNumber("ENCODER1angle", getEncoderVal(ENCODER1));
+		SmartDashboard.putNumber("ENCODER2angle", getEncoderVal(ENCODER2));
+		SmartDashboard.putNumber("ENCODER3angle", getEncoderVal(ENCODER3));
+		SmartDashboard.putNumber("ENCODER4angle", getEncoderVal(ENCODER4));
 
 	}
 
