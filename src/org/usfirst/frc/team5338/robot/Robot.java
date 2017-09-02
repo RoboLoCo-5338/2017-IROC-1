@@ -6,29 +6,26 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 public class Robot extends IterativeRobot {
+	// Creates the OI and DriveTrain objects.
 	public static final OI oi = new OI();
 	public static final DriveTrain drivetrain = new DriveTrain();
 
-	@Override
+	// Robot object constructor.
 	public void robotInit() {
-		DriveTrain.initSensors();
 	}
-	
 
-	@Override
 	public void autonomousInit() {
 	}
 
-	@Override
+	// Periodically called to run the autonomous command.
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 	}
 
-	@Override
 	public void teleopInit() {
 	}
 
-	@Override
+	// Periodically called to run default commands in teleop.
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 	}
