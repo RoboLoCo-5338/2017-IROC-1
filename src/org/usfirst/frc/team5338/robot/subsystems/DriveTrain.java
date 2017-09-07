@@ -29,12 +29,12 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER3 = new AnalogInput(2);
 	private final AnalogInput ENCODER4 = new AnalogInput(3);
 
-	PIDController pid1 = new PIDController(0.125, 0, 0, new EncoderPID(1), DRIVESTEERING1, .001);
-	PIDController pid2 = new PIDController(.0025, 0, 0, new EncoderPID(2), DRIVESTEERING2, .005);
-	PIDController pid3 = new PIDController(.0025, 0, 0, new EncoderPID(3), DRIVESTEERING3, .005);
-	PIDController pid4 = new PIDController(.0025, 0, 0, new EncoderPID(4), DRIVESTEERING4, .005);
+	PIDController pid1 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(1), DRIVESTEERING1, .001);
+	PIDController pid2 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(2), DRIVESTEERING2, .001);
+	PIDController pid3 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(3), DRIVESTEERING3, .001);
+	PIDController pid4 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(4), DRIVESTEERING4, .001);
 
-	double[] centers = { 52456.0, 56494.0, 47344.0, 9080.0 }; // don't use.
+	double[] centers = { 52456.0, 56494.0, 47344.0, 9080.0 };
 
 	// DriveTrain object constructor which configures encoders and reverses
 	// output
@@ -57,27 +57,31 @@ public class DriveTrain extends Subsystem {
 
 		pid1.setInputRange(0, 360);
 		pid1.setContinuous(true);
-		pid1.setOutputRange(-.5, .5);
+		pid1.setOutputRange(-.99, .99);
 		pid1.setSetpoint(getEncoderVal(1));
+		pid1.setAbsoluteTolerance(0.5);
 		pid1.enable();
 
 		pid2.setInputRange(0, 360);
 		pid2.setContinuous(true);
-		pid2.setOutputRange(-.4, .4);
+		pid2.setOutputRange(-.99, .99);
 		pid2.setSetpoint(getEncoderVal(2));
-		// pid2.enable();
+		pid2.setAbsoluteTolerance(0.5);
+		pid2.enable();
 
 		pid3.setInputRange(0, 360);
 		pid3.setContinuous(true);
-		pid3.setOutputRange(-.4, .4);
+		pid3.setOutputRange(-.99, .99);
 		pid3.setSetpoint(getEncoderVal(3));
-		// pid3.enable();
+		pid3.setAbsoluteTolerance(0.5);
+		pid3.enable();
 
 		pid4.setInputRange(0, 360);
 		pid4.setContinuous(true);
-		pid4.setOutputRange(-.4, .4);
+		pid4.setOutputRange(-.99, .99);
 		pid4.setSetpoint(getEncoderVal(4));
-		// pid4.enable();
+		pid4.setAbsoluteTolerance(0.5);
+		pid4.enable();
 
 	}
 
@@ -99,10 +103,10 @@ public class DriveTrain extends Subsystem {
 		SmartDashboard.putNumber("PIDInput", pid1.getError());
 
 		double angle = oi.getLeft('A');
-		pid1.setSetpoint(180);
-		pid2.setSetpoint(180);
-		pid3.setSetpoint(180);
-		pid4.setSetpoint(180);
+		pid1.setSetpoint(90);
+		pid2.setSetpoint(90);
+		pid3.setSetpoint(90);
+		pid4.setSetpoint(90);
 
 		SmartDashboard.putNumber("Joystick Angle", angle);
 
