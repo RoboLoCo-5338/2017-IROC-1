@@ -29,12 +29,12 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER3 = new AnalogInput(2);
 	private final AnalogInput ENCODER4 = new AnalogInput(3);
 
-	PIDController pid1 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(1), DRIVESTEERING1, .001);
-	PIDController pid2 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(2), DRIVESTEERING2, .001);
-	PIDController pid3 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(3), DRIVESTEERING3, .001);
-	PIDController pid4 = new PIDController(0.1025*0.8, 0, 0.11666667/8, new EncoderPID(4), DRIVESTEERING4, .001);
+	private final PIDController pid1 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(1), DRIVESTEERING1, .001);
+	private final PIDController pid2 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(2), DRIVESTEERING2, .001);
+	private final PIDController pid3 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(3), DRIVESTEERING3, .001);
+	private final PIDController pid4 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(4), DRIVESTEERING4, .001);
 
-	double[] centers = { 52456.0, 56494.0, 47344.0, 9080.0 };
+	double[] centers = {52456.0, 56494.0, 47344.0, 9080.0};
 
 	// DriveTrain object constructor which configures encoders and reverses
 	// output
@@ -57,30 +57,30 @@ public class DriveTrain extends Subsystem {
 
 		pid1.setInputRange(0, 360);
 		pid1.setContinuous(true);
-		pid1.setOutputRange(-.99, .99);
+		pid1.setOutputRange(-1, 1);
 		pid1.setSetpoint(getEncoderVal(1));
-		pid1.setAbsoluteTolerance(0.5);
+		pid1.setAbsoluteTolerance(0.25);
 		pid1.enable();
 
 		pid2.setInputRange(0, 360);
 		pid2.setContinuous(true);
-		pid2.setOutputRange(-.99, .99);
+		pid2.setOutputRange(-1, 1);
 		pid2.setSetpoint(getEncoderVal(2));
-		pid2.setAbsoluteTolerance(0.5);
+		pid2.setAbsoluteTolerance(0.25);
 		pid2.enable();
 
 		pid3.setInputRange(0, 360);
 		pid3.setContinuous(true);
-		pid3.setOutputRange(-.99, .99);
+		pid3.setOutputRange(-1, 1);
 		pid3.setSetpoint(getEncoderVal(3));
-		pid3.setAbsoluteTolerance(0.5);
+		pid3.setAbsoluteTolerance(0.25);
 		pid3.enable();
 
 		pid4.setInputRange(0, 360);
 		pid4.setContinuous(true);
-		pid4.setOutputRange(-.99, .99);
+		pid4.setOutputRange(-1, 1);
 		pid4.setSetpoint(getEncoderVal(4));
-		pid4.setAbsoluteTolerance(0.5);
+		pid4.setAbsoluteTolerance(0.25);
 		pid4.enable();
 
 	}
@@ -91,34 +91,27 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void drive(OI oi) {
-
-		SmartDashboard.putNumber("ENCODER1", ENCODER1.getAverageValue());
-		SmartDashboard.putNumber("ENCODER2", ENCODER2.getAverageValue());
-		SmartDashboard.putNumber("ENCODER3", ENCODER3.getAverageValue());
-		SmartDashboard.putNumber("ENCODER4", ENCODER4.getAverageValue());
-		SmartDashboard.putNumber("Angle:ENCODER1", getEncoderVal(1));
-		SmartDashboard.putNumber("Angle:ENCODER2", getEncoderVal(2));
-		SmartDashboard.putNumber("Angle:ENCODER3", getEncoderVal(3));
-		SmartDashboard.putNumber("Angle:ENCODER4", getEncoderVal(4));
-		SmartDashboard.putNumber("PIDInput", pid1.getError());
-
-		double angle = oi.getLeft('A');
-		pid1.setSetpoint(90);
-		pid2.setSetpoint(90);
-		pid3.setSetpoint(90);
-		pid4.setSetpoint(90);
-
-		SmartDashboard.putNumber("Joystick Angle", angle);
-
+		double angle = oi.getLeft('A') + 180;
+		if(angle > 0)
+		{
+			double magnitude = oi.getLeft('M') * oi.getRight('T');
+			drive(magnitude, angle, magnitude, angle, magnitude, angle, magnitude, angle);
+		}
+		else
+		{
+			double magnitude = 0;
+			angle = pid1.getSetpoint();
+			drive(magnitude, angle, magnitude, angle, magnitude, angle, magnitude, angle);
+		}
 	}
 
-	// Sets output of CANTalons based on the double arguments.
-	public void drive(double motor1, double steering1, double motor2, double steering2, double motor3, double steering3,
-			double motor4, double steering4) {
-		DRIVESTEERING1.set(steering1);
-		DRIVESTEERING2.set(steering2);
-		DRIVESTEERING3.set(steering3);
-		DRIVESTEERING4.set(steering4);
+	// Sets output of CANTalons and PID based on the double arguments.
+	public void drive(double motor1, double angle1, double motor2, double angle2, double motor3, double angle3,
+			double motor4, double angle4) {
+		pid1.setSetpoint(angle1);
+		pid2.setSetpoint(angle2);
+		pid3.setSetpoint(angle3);
+		pid4.setSetpoint(angle4);
 		DRIVEMOTOR1.set(motor1);
 		DRIVEMOTOR2.set(motor2);
 		DRIVEMOTOR3.set(motor3);
