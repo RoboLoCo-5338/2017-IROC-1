@@ -113,6 +113,13 @@ public class DriveTrain extends Subsystem {
 
 	public void drive(OI oi) {
 		double angle = oi.getLeft('A');
+		double magnitude = oi.getLeft('M') * oi.getRight('T');
+		double rotation = oi.getLeft('Z') * oi.getRight('T');
+		if (angle == 999)
+		{
+			angle = pid1.getSetpoint();
+			magnitude = 0;
+		}
 		double heading = ahrs.getYaw();
 		double wheelAngle = (angle - heading);
 		if (wheelAngle > 180) {
@@ -122,14 +129,6 @@ public class DriveTrain extends Subsystem {
 			wheelAngle += 360;
 		}
 		
-		if (angle == 999)
-		{
-			angle = pid1.getSetpoint();
-			drive(0, angle, 0, angle, 0, angle, 0, angle);
-			return;
-		}
-		
-		double magnitude = oi.getLeft('M') * oi.getRight('T');
 		wheel1.setAngle(wheelAngle);
 		wheel2.setAngle(wheelAngle);
 		wheel3.setAngle(wheelAngle);
@@ -138,6 +137,15 @@ public class DriveTrain extends Subsystem {
 		wheel2.setMagnitude(magnitude);
 		wheel3.setMagnitude(magnitude);
 		wheel4.setMagnitude(magnitude);
+		
+		if(rotation > 0)
+		{
+			
+		}
+		else if(rotation < 0)
+		{
+			
+		}
 		
 		//rotation stuffs here
 		
@@ -246,6 +254,13 @@ public class DriveTrain extends Subsystem {
 		void setMagnitude(double m)
 		{
 			magnitude = m;
+		}
+		
+		void add(Vector other) {
+			double rX = (this.magnitude * Math.cos(this.angle)) + (other.getMagnitude() * Math.cos(other.getAngle()));
+			double rY = (this.magnitude * Math.sin(this.angle)) + (other.getMagnitude() * Math.sin(other.getAngle())); 
+			this.magnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
+			this.angle = Math.atan2(rY, rX);
 		}
 	}
 }

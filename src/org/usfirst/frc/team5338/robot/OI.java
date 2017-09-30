@@ -56,7 +56,14 @@ public class OI {
 		case 'T': // Gets throttle position
 			return (joyLeft.getRawAxis(3) - 1) / -2;
 		case 'M': // Gets magnitude away from origin
-			return joyLeft.getMagnitude();
+			if(joyLeft.getMagnitude() > 0.1)
+			{
+				return joyLeft.getMagnitude();
+			}
+			else
+			{
+				return 0;
+			}
 		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
 			if (joyLeft.getMagnitude() > 0.1) {
 				return joyLeft.getDirectionDegrees();
