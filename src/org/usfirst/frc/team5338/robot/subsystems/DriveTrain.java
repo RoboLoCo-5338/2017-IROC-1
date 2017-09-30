@@ -57,6 +57,7 @@ public class DriveTrain extends Subsystem {
 		ahrs.reset();
 		ahrs.zeroYaw();
 		
+		
 		ENCODER1.setOversampleBits(4);
 		ENCODER1.setAverageBits(4);
 		ENCODER2.setOversampleBits(4);
@@ -112,17 +113,27 @@ public class DriveTrain extends Subsystem {
 
 	public void drive(OI oi) {
 		double angle = oi.getLeft('A');
+		double heading = ahrs.getYaw();
+		double wheelAngle = (angle - heading);
+		if (wheelAngle > 180) {
+			wheelAngle -= 360;
+		}
+		else if (wheelAngle < -180) {
+			wheelAngle += 360;
+		}
+		
 		if (angle == 999)
 		{
 			angle = pid1.getSetpoint();
 			drive(0, angle, 0, angle, 0, angle, 0, angle);
 			return;
 		}
+		
 		double magnitude = oi.getLeft('M') * oi.getRight('T');
-		wheel1.setAngle(angle);
-		wheel2.setAngle(angle);
-		wheel3.setAngle(angle);
-		wheel4.setAngle(angle);
+		wheel1.setAngle(wheelAngle);
+		wheel2.setAngle(wheelAngle);
+		wheel3.setAngle(wheelAngle);
+		wheel4.setAngle(wheelAngle);
 		wheel1.setMagnitude(magnitude);
 		wheel2.setMagnitude(magnitude);
 		wheel3.setMagnitude(magnitude);
@@ -162,7 +173,6 @@ public class DriveTrain extends Subsystem {
 		SmartDashboard.putNumber("ENCODER2", getEncoderVal(1));
 		SmartDashboard.putNumber("ENCODER3", getEncoderVal(2));
 		SmartDashboard.putNumber("ENCODER4", getEncoderVal(3));
-		SmartDashboard.putNumber("ANGLE", angle);
 	}
 
 	// Sets output of CANTalons and PID based on the double arguments.
