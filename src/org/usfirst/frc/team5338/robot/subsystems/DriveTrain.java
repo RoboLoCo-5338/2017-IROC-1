@@ -4,8 +4,10 @@ import org.usfirst.frc.team5338.robot.OI;
 import org.usfirst.frc.team5338.robot.commands.SwerveDriveWithJoysticks;
 
 import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
@@ -29,18 +31,32 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER3 = new AnalogInput(2);
 	private final AnalogInput ENCODER4 = new AnalogInput(3);
 
-	private final PIDController pid1 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(1), DRIVESTEERING1, .001);
-	private final PIDController pid2 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(2), DRIVESTEERING2, .001);
-	private final PIDController pid3 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(3), DRIVESTEERING3, .001);
-	private final PIDController pid4 = new PIDController(0.1025*0.8, 0, 0.11666666667/8, new EncoderPID(4), DRIVESTEERING4, .001);
-
-	double[] centers = {52456.0, 56494.0, 47344.0, 9080.0};
+	private final PIDController pid1 = new PIDController(0.055, 0, 0, new EncoderPID(0),
+			DRIVESTEERING1, 0.001);
+	private final PIDController pid2 = new PIDController(0.055, 0, 0, new EncoderPID(1),
+			DRIVESTEERING2, 0.001);
+	private final PIDController pid3 = new PIDController(0.055, 0, 0, new EncoderPID(2),
+			DRIVESTEERING3, 0.001);
+	private final PIDController pid4 = new PIDController(0.055, 0, 0, new EncoderPID(3),
+			DRIVESTEERING4, 0.001);
+	
+	private Vector wheel1 = new Vector(0, 0);
+	private Vector wheel2 = new Vector(0, 0);
+	private Vector wheel3 = new Vector(0, 0);
+	private Vector wheel4 = new Vector(0, 0);
+	
+	private static final AHRS ahrs = new AHRS(SPI.Port.kMXP, (byte) (200));
 
 	// DriveTrain object constructor which configures encoders and reverses
 	// output
 	// of backwards motors.
 	public DriveTrain() {
 		super();
+		while (ahrs.isCalibrating() || ahrs.isMagnetometerCalibrated()) {
+		}
+		ahrs.reset();
+		ahrs.zeroYaw();
+		
 		ENCODER1.setOversampleBits(4);
 		ENCODER1.setAverageBits(4);
 		ENCODER2.setOversampleBits(4);
@@ -49,37 +65,41 @@ public class DriveTrain extends Subsystem {
 		ENCODER3.setAverageBits(4);
 		ENCODER4.setOversampleBits(4);
 		ENCODER4.setAverageBits(4);
-		// Needs to reverse backwards motors.
+
+		DRIVEMOTOR1.setInverted(false);
+		DRIVEMOTOR2.setInverted(false);
+		DRIVEMOTOR3.setInverted(false);
+		DRIVEMOTOR4.setInverted(false);
 		DRIVESTEERING1.setInverted(true);
 		DRIVESTEERING2.setInverted(true);
 		DRIVESTEERING3.setInverted(true);
 		DRIVESTEERING4.setInverted(true);
 
-		pid1.setInputRange(0, 360);
+		pid1.setInputRange(-180, 180);
 		pid1.setContinuous(true);
 		pid1.setOutputRange(-1, 1);
-		pid1.setSetpoint(getEncoderVal(1));
+		pid1.setSetpoint(getEncoderVal(0));
 		pid1.setAbsoluteTolerance(0.25);
 		pid1.enable();
 
-		pid2.setInputRange(0, 360);
+		pid2.setInputRange(-180, 180);
 		pid2.setContinuous(true);
 		pid2.setOutputRange(-1, 1);
-		pid2.setSetpoint(getEncoderVal(2));
+		pid2.setSetpoint(getEncoderVal(1));
 		pid2.setAbsoluteTolerance(0.25);
 		pid2.enable();
 
-		pid3.setInputRange(0, 360);
+		pid3.setInputRange(-180, 180);
 		pid3.setContinuous(true);
 		pid3.setOutputRange(-1, 1);
-		pid3.setSetpoint(getEncoderVal(3));
+		pid3.setSetpoint(getEncoderVal(2));
 		pid3.setAbsoluteTolerance(0.25);
 		pid3.enable();
 
-		pid4.setInputRange(0, 360);
+		pid4.setInputRange(-180, 180);
 		pid4.setContinuous(true);
 		pid4.setOutputRange(-1, 1);
-		pid4.setSetpoint(getEncoderVal(4));
+		pid4.setSetpoint(getEncoderVal(3));
 		pid4.setAbsoluteTolerance(0.25);
 		pid4.enable();
 
@@ -91,18 +111,58 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void drive(OI oi) {
-		double angle = oi.getLeft('A') + 180;
-		if(angle > 0)
+		double angle = oi.getLeft('A');
+		if (angle == 999)
 		{
-			double magnitude = oi.getLeft('M') * oi.getRight('T');
-			drive(magnitude, angle, magnitude, angle, magnitude, angle, magnitude, angle);
-		}
-		else
-		{
-			double magnitude = 0;
 			angle = pid1.getSetpoint();
-			drive(magnitude, angle, magnitude, angle, magnitude, angle, magnitude, angle);
+			drive(0, angle, 0, angle, 0, angle, 0, angle);
+			return;
 		}
+		double magnitude = oi.getLeft('M') * oi.getRight('T');
+		wheel1.setAngle(angle);
+		wheel2.setAngle(angle);
+		wheel3.setAngle(angle);
+		wheel4.setAngle(angle);
+		wheel1.setMagnitude(magnitude);
+		wheel2.setMagnitude(magnitude);
+		wheel3.setMagnitude(magnitude);
+		wheel4.setMagnitude(magnitude);
+		
+		//rotation stuffs here
+		
+		//		
+//		double R = oi.getLeft('Z')  * oi.getRight('T');
+//		double X = oi.getLeft('X') * oi.getRight('T');
+//		double Y = oi.getLeft('Y') * oi.getRight('T');
+//		double T = ahrs.getAngle();
+//		
+//		double temp = Y * Math.cos(T) + X * Math.sin(T);
+//		X = -Y * Math.sin(T) + X * Math.cos(T);
+//		Y = temp;
+//		
+//		double A = X - R * Math.sqrt(2) / 2;
+//		double B = X + R * Math.sqrt(2) / 2;
+//		double C = Y - R * Math.sqrt(2) / 2;
+//		double D = Y + R * Math.sqrt(2) / 2;
+//		
+//		double ws1 = Math.sqrt(B * B + C * C);
+//		double ws2 = Math.sqrt(B * B + D * D);
+//		double ws3 = Math.sqrt(A * A + D * D);
+//		double ws4 = Math.sqrt(A * A + C * C);
+//		
+//		double max = Math.max(Math.max(ws1, ws2), Math.max(ws3, ws4));
+//		ws1 /= max;
+//		ws2 /= max;
+//		ws3 /= max;
+//		ws4 /= max;
+		
+		//drive(ws1, -(-180 - Math.atan2(B, C) * 180 / Math.PI), ws2, 180 - Math.atan2(B, D) * 180 / Math.PI, ws3, -(180 - Math.atan2(A, D) * 180 / Math.PI), ws4, 180 + Math.atan2(A, C) * 180 / Math.PI);
+		drive(wheel1.getMagnitude(), wheel1.getAngle(), wheel2.getMagnitude(), wheel2.getAngle(), wheel3.getMagnitude(), wheel3.getAngle(), wheel4.getMagnitude(), wheel4.getAngle());
+		SmartDashboard.putNumber("ENCODER1", getEncoderVal(0));
+		SmartDashboard.putNumber("ENCODER2", getEncoderVal(1));
+		SmartDashboard.putNumber("ENCODER3", getEncoderVal(2));
+		SmartDashboard.putNumber("ENCODER4", getEncoderVal(3));
+		SmartDashboard.putNumber("ANGLE", angle);
 	}
 
 	// Sets output of CANTalons and PID based on the double arguments.
@@ -119,67 +179,63 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public double getEncoderVal(int encoder) {
-		int[] defaults = { 52021, 47665, 56888, 8903 };
-		if (encoder == 1) {
-			return (((ENCODER1.getAverageValue() - defaults[0] + 65535) % 65536) / 65535.0) * 360.0;
+		int[] defaults = {13125, 15481, 15812, 60876};
+		if (encoder == 0) {
+			return (((ENCODER1.getAverageValue() - defaults[0] + 65535) % 65536) / 65535.0) * -360.0 + 180;
+		} else if (encoder == 1) {
+			return (((ENCODER2.getAverageValue() - defaults[1] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 2) {
-			return (((ENCODER2.getAverageValue() - defaults[1] + 65535) % 65536) / 65535.0) * 360.0;
+			return (((ENCODER3.getAverageValue() - defaults[2] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 3) {
-			return (((ENCODER3.getAverageValue() - defaults[2] + 65535) % 65536) / 65535.0) * 360.0;
-		} else if (encoder == 4) {
-			return (((ENCODER4.getAverageValue() - defaults[3] + 65535) % 65536) / 65535.0) * 360.0;
+			return (((ENCODER4.getAverageValue() - defaults[3] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else {
 			return -1.0;
 		}
 	}
 
-	double scaleInput(double dVal) {
-		double[] scaleArray = new double[360];
-		for (int i = 0; i < scaleArray.length; i += 2) {
-			scaleArray[i] = (double) i;
-		}
-
-		// get the corresponding index for the scaleInput array.
-		int index = (int) (dVal * scaleArray.length);
-		if (index < 0) {
-			index = -index;
-		} else if (index > 360) {
-			index = 360;
-		}
-
-		double dScale = 0.0;
-		if (dVal < 0) {
-			dScale = -scaleArray[index];
-		} else {
-			dScale = scaleArray[index];
-		}
-
-		return dScale;
-	}
-
 	class EncoderPID implements PIDSource {
-
 		public int encoder;
-
 		public EncoderPID(int encoder) {
 			this.encoder = encoder;
 		}
-
 		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
 			ENCODER1.setPIDSourceType(pidSource);
 		}
-
 		@Override
 		public PIDSourceType getPIDSourceType() {
 			return ENCODER1.getPIDSourceType();
 		}
-
 		@Override
 		public double pidGet() {
 			return getEncoderVal(encoder);
 		}
-
 	}
-
+	
+	class Vector
+	{
+		private double magnitude;
+		private double angle;
+		public Vector(double m, double a)
+		{
+			magnitude = m;
+			angle = a;
+	}
+		double getAngle()
+		{
+			return angle;
+		}
+		void setAngle(double a)
+		{
+			angle = a;
+		}
+		double getMagnitude()
+		{
+			return magnitude;
+		}
+		void setMagnitude(double m)
+		{
+			magnitude = m;
+		}
+	}
 }

@@ -54,17 +54,14 @@ public class OI {
 		case 'Z': // Gets deadzone corrected z-axis (rotation) position
 			return deadZoneCorrection(joyLeft.getRawAxis(2));
 		case 'T': // Gets throttle position
-			return (joyLeft.getRawAxis(3) - 1)/-2;
-		case 'M': // Gets deadzone corrected magnitude away from origin
-			return deadZoneCorrection(joyLeft.getMagnitude());
-		case 'A': // Gets angle of joystick in radians if greater than a deadzone
-			if(deadZoneCorrection(joyLeft.getMagnitude()) > 0.06)
-			{
-			return joyLeft.getDirectionDegrees();
-			}
-			else
-			{
-			return -200.0;
+			return (joyLeft.getRawAxis(3) - 1) / -2;
+		case 'M': // Gets magnitude away from origin
+			return joyLeft.getMagnitude();
+		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
+			if (joyLeft.getMagnitude() > 0.1) {
+				return joyLeft.getDirectionDegrees();
+			} else {
+				return 999;
 			}
 		default:
 			return 0.0;
@@ -81,21 +78,18 @@ public class OI {
 		case 'Z': // Gets deadzone corrected z-axis (rotation) position
 			return deadZoneCorrection(joyRight.getRawAxis(2));
 		case 'T': // Gets throttle position
-			return (joyRight.getRawAxis(3) - 1)/-2;
-		case 'M': // Gets deadzone corrected magnitude away from origin
-			return deadZoneCorrection(joyRight.getMagnitude());
-		case 'A': // Gets angle of joystick in radians
-			if(deadZoneCorrection(joyRight.getMagnitude()) > 0.06)
-			{
-			return joyRight.getDirectionDegrees();
-			}
-			else
-			{
-			return -200.0;
+			return (joyRight.getRawAxis(3) - 1) / -2;
+		case 'M': // Gets magnitude away from origin
+			return joyRight.getMagnitude();
+		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
+			if (joyRight.getMagnitude() > 0.1) {
+				return joyLeft.getDirectionDegrees();
+			} else {
+				return 999;
 			}
 		default:
 			return 0.0;
 		}
 	}
-	
+
 }
