@@ -240,7 +240,10 @@ public class DriveTrain extends Subsystem {
 
 			double tempmagnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			double tempangle = Math.toDegrees(Math.atan2(rY, rX));
-
+			tempangle = tempangle % 360;
+			tempangle = (tempangle + 360) % 360;
+			if (tempangle > 180)  
+			    {tempangle -= 360;}
 			setAngleMangnitude(tempangle, tempmagnitude);
 		}
 	}
