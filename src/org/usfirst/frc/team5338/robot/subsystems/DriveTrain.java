@@ -100,17 +100,16 @@ public class DriveTrain extends Subsystem {
 		pid4.setSetpoint(getEncoderVal(3));
 		pid4.setAbsoluteTolerance(0.25);
 		pid4.enable();
-		
 
 	}
 
 	// Sets the default command to run during teleop to joystick driving.
 	public void initDefaultCommand() {
 		setDefaultCommand(new SwerveDriveWithJoysticks());
-		Vector vector= new Vector(1,45);
-		vector.add(new Vector(1,180));
-		SmartDashboard.putNumber("testcase1",vector.getAngle());
-		SmartDashboard.putNumber("testcase1mag",vector.getMagnitude());
+		Vector vector = new Vector(1, 45);
+		vector.add(new Vector(1, 180));
+		SmartDashboard.putNumber("testcase1", vector.getAngle());
+		SmartDashboard.putNumber("testcase1mag", vector.getMagnitude());
 	}
 
 	public void drive(OI oi) {
@@ -134,15 +133,9 @@ public class DriveTrain extends Subsystem {
 		wheel3.setAngleMangnitude(wheelAngle, magnitude);
 		wheel4.setAngleMangnitude(wheelAngle, magnitude);
 
-		if (rotation != 0) {
-			wheel1.add(new Vector(rotation, 45));
-			wheel2.add(new Vector(rotation, 135));
-			wheel3.add(new Vector(rotation, -45));
-			wheel4.add(new Vector(rotation, -135));
-		}
 
 		drive(wheel1.getMagnitude(), wheel1.getAngle(), wheel2.getMagnitude(), wheel2.getAngle(), wheel3.getMagnitude(),
-				wheel3.getAngle(), wheel4.getMagnitude(), wheel4.getAngle());
+				wheel3.getAngle(), wheel4.getMagnitude(), wheel4.getAngle(), rotation);
 
 		SmartDashboard.putNumber("ENCODER1", getEncoderVal(0));
 		SmartDashboard.putNumber("ENCODER2", getEncoderVal(1));
@@ -152,7 +145,40 @@ public class DriveTrain extends Subsystem {
 
 	// Sets output of CANTalons and PID based on the double arguments.
 	public void drive(double motor1, double angle1, double motor2, double angle2, double motor3, double angle3,
-			double motor4, double angle4) {
+			double motor4, double angle4, double rotation) {
+		Vector wheel1rotation = new Vector(rotation, 45);
+		Vector wheel2rotation = new Vector(rotation, 135);
+		Vector wheel3rotation = new Vector(rotation, -45);
+		Vector wheel4rotation = new Vector(rotation, -135);
+		
+		if (angle1 > 90) {
+			angle1 -= 180;
+			motor1 *= -1;
+		} else if (angle1 < -90) {
+			angle1 += 180;
+			motor1 *= -1;
+		}
+		if (angle2 > 90) {
+			angle2 -= 180;
+			motor2 *= -1;
+		} else if (angle2 < -90) {
+			angle2 += 180;
+			motor2 *= -1;
+		}
+		if (angle3 > 90) {
+			angle3 -= 180;
+			motor3 *= -1;
+		} else if (angle3 < -90) {
+			angle3 -= 180;
+			motor3 *= -1;
+		}
+		if (angle4 > 90) {
+			angle4 -= 180;
+			motor4 *= -1;
+		} else if (angle4 < -90) {
+			angle4 += 180;
+			motor4 *= -1;
+		}
 		pid1.setSetpoint(angle1);
 		pid2.setSetpoint(angle2);
 		pid3.setSetpoint(angle3);
@@ -212,10 +238,6 @@ public class DriveTrain extends Subsystem {
 		void setAngleMangnitude(double a, double m) {
 			angle = a;
 			magnitude = m;
-			angle = angle % 360;
-			angle = (angle + 360) % 360;
-			if (angle > 180)  
-			    {angle -= 360;}
 		}
 
 		double getAngle() {
@@ -235,48 +257,49 @@ public class DriveTrain extends Subsystem {
 		}
 
 		void add(Vector other) {
-//			other=new Vector(-1,180);
-//			this.setAngleMangnitude(1, 45);
+			// other=new Vector(-1,180);
+			// this.setAngleMangnitude(1, 45);
 			double otherangle = Math.toRadians(other.getAngle());
 			double thisangle = Math.toRadians(this.angle);
-			double rX = (this.magnitude * Math.cos(thisangle)) + (other.getMagnitude() * Math.cos(otherangle));
-			double rY = (this.magnitude * Math.sin(thisangle)) + (other.getMagnitude() * Math.sin(otherangle));
-			
+			double rX = this.magnitude * Math.cos(thisangle) + other.getMagnitude() * Math.cos(otherangle);
+			double rY = this.magnitude * Math.sin(thisangle) + other.getMagnitude() * Math.sin(otherangle);
+
 			double tempmagnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			double tempangle = Math.toDegrees(Math.atan2(rY, rX));
-			if(this.angle==45) {
-			SmartDashboard.putNumber("testcase1ang pre switch",tempangle);
-			}
-			tempangle = tempangle % 360;
-			tempangle = (tempangle + 360) % 360;
-			if (tempangle > 180)  
-			    {
-				tempangle -= 360;
-				}
-			if(this.angle==45) {
-				SmartDashboard.putNumber("testcase1angle post mod stuff",tempangle);
-				}
-				
-			double difangle = (tempangle-this.angle);
-		//	SmartDashboard.putNumber("ANGLE FROM ADD", difangle);
-			if (difangle > 90) {
-			//	difangle = difangle - 180;
-			//	tempangle -= 180;
-			//	tempangle = difangle + tempangle;
-				setAngleMangnitude(tempangle - 180, tempmagnitude * -1);
-			} else if (difangle < -90) {
-			//	difangle = difangle + 180;
-			//	tempangle = difangle + tempangle;
-				setAngleMangnitude(tempangle + 180, tempmagnitude * -1);
-			}
-			else {
-				setAngleMangnitude(tempangle, tempmagnitude);
-			}
-			if(true) {
-				SmartDashboard.putNumber("testcase1 angle dif",difangle);
-				SmartDashboard.putNumber("Tempangle end", tempangle);
-			}
-				
+
+			setAngleMangnitude(tempangle, tempmagnitude);
+
+			// if (this.angle == 45) {
+			// SmartDashboard.putNumber("testcase1ang pre switch", tempangle);
+			// }
+			// tempangle = tempangle % 360;
+			// tempangle = (tempangle + 360) % 360;
+			// if (tempangle > 180) {
+			// tempangle -= 360;
+			// }
+			// if (this.angle == 45) {
+			// SmartDashboard.putNumber("testcase1angle post mod stuff", tempangle);
+			// }
+			//
+			// double difangle = (tempangle - this.angle);
+			// // SmartDashboard.putNumber("ANGLE FROM ADD", difangle);
+			// if (difangle > 90) {
+			// // difangle = difangle - 180;
+			// // tempangle -= 180;
+			// // tempangle = difangle + tempangle;
+			// setAngleMangnitude(tempangle - 180, tempmagnitude * -1);
+			// } else if (difangle < -90) {
+			// // difangle = difangle + 180;
+			// // tempangle = difangle + tempangle;
+			// setAngleMangnitude(tempangle + 180, tempmagnitude * -1);
+			// } else {
+			// setAngleMangnitude(tempangle, tempmagnitude);
+			// }
+			// if (true) {
+			// SmartDashboard.putNumber("testcase1 angle dif", difangle);
+			// SmartDashboard.putNumber("Tempangle end", tempangle);
+			// }
+
 		}
 	}
 }
