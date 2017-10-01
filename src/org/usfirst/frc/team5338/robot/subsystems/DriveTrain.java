@@ -210,7 +210,7 @@ public class DriveTrain extends Subsystem {
 			if (this.angle > 90 || this.angle < -90) 
 			{
 				this.magnitude *= -1;
-				this.angle = (this.angle % 360) - 180;
+				this.angle = ((this.angle + 360) % 360) - 180; //plus 360 necessary because of how Java handles modulus of negative numbers
 				
 			}
 		}
