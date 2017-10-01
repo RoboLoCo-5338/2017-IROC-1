@@ -116,7 +116,6 @@ public class DriveTrain extends Subsystem {
 		if (magnitude != 0) {
 			angle = oi.getLeft('A');
 		}
-		SmartDashboard.putNumber("ANGLE", oi.getLeft('A'));
 		
 		double wheelAngle = (angle - heading);
 		if (wheelAngle > 180) {
