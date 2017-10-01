@@ -35,10 +35,10 @@ public class OI {
 
 	// Gets a corrected double value after adjusting for a deadzone around 0.
 	private double deadZoneCorrection(double value) {
-		if (value > 0.06) { // Values are scaled from 0.04 to 1 to 0 to 1
-			return (value - 0.06) / 0.94;
-		} else if (value < -0.06) { // Values are scaled from -0.04 to -1 to 0 to -1
-			return (value + 0.06) / 0.94;
+		if (value > 0.10) { // Values are scaled from 0.04 to 1 to 0 to 1
+			return (value - 0.1) / 0.90;
+		} else if (value < -0.1) { // Values are scaled from -0.04 to -1 to 0 to -1
+			return (value + 0.1) / 0.90;
 		} else { // Returns 0
 			return 0.0;
 		}
@@ -56,12 +56,9 @@ public class OI {
 		case 'T': // Gets throttle position
 			return (joyLeft.getRawAxis(3) - 1) / -2;
 		case 'M': // Gets magnitude away from origin
-			if(joyLeft.getMagnitude() > 0.1)
-			{
+			if (joyLeft.getMagnitude() > 0.1) {
 				return joyLeft.getMagnitude();
-			}
-			else
-			{
+			} else {
 				return 0;
 			}
 		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
@@ -87,10 +84,14 @@ public class OI {
 		case 'T': // Gets throttle position
 			return (joyRight.getRawAxis(3) - 1) / -2;
 		case 'M': // Gets magnitude away from origin
-			return joyRight.getMagnitude();
+			if (joyRight.getMagnitude() > 0.3) {
+				return joyRight.getMagnitude();
+			} else {
+				return 0;
+			}
 		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
-			if (joyRight.getMagnitude() > 0.1) {
-				return joyLeft.getDirectionDegrees();
+			if (joyRight.getMagnitude() > 0.3) {
+				return joyRight.getDirectionDegrees();
 			} else {
 				return 999;
 			}
