@@ -207,6 +207,12 @@ public class DriveTrain extends Subsystem {
 		void setAngleMangnitude(double a, double m) {
 			angle = a;
 			magnitude = m;
+			if (this.angle > 90 || this.angle < -90) 
+			{
+				this.magnitude *= -1;
+				this.angle = (this.angle % 360) - 180;
+				
+			}
 		}
 		double getAngle() {
 			return angle;
@@ -221,12 +227,15 @@ public class DriveTrain extends Subsystem {
 			magnitude = m;
 		}
 		void add(Vector other) {
-			other = new Vector(other.getMagnitude(), Math.toRadians(other.getAngle()));
-			this.setAngle(Math.toRadians(this.angle));
-			double rX = (this.magnitude * Math.cos(this.angle)) + (other.getMagnitude() * Math.cos(other.getAngle()));
-			double rY = (this.magnitude * Math.sin(this.angle)) + (other.getMagnitude() * Math.sin(other.getAngle()));
-			this.magnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
-			this.angle = Math.toDegrees(Math.atan2(rY, rX));
+			double otherangle = Math.toRadians(other.getAngle());
+ 			double thisangle = Math.toRadians(this.angle);
+			double rX = (this.magnitude * Math.cos(thisangle)) + (other.getMagnitude() * Math.cos(otherangle));
+			double rY = (this.magnitude * Math.sin(thisangle)) + (other.getMagnitude() * Math.sin(otherangle));
+			
+			double tempmagnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
+			double tempangle = Math.toDegrees(Math.atan2(rY, rX));
+			
+			setAngleMangnitude(tempangle, tempmagnitude);
 		}
 	}
 }
