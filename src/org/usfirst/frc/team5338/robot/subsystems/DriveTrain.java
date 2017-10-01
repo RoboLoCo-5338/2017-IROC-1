@@ -112,11 +112,11 @@ public class DriveTrain extends Subsystem {
 		double magnitude = oi.getLeft('M') * oi.getRight('T');
 		double rotation = oi.getLeft('Z') * oi.getRight('T');
 		double heading = ahrs.getYaw();
-		
+
 		if (magnitude != 0) {
 			angle = oi.getLeft('A');
 		}
-		
+
 		double wheelAngle = (angle - heading);
 		if (wheelAngle > 180) {
 			wheelAngle -= 360;
@@ -138,7 +138,7 @@ public class DriveTrain extends Subsystem {
 
 		drive(wheel1.getMagnitude(), wheel1.getAngle(), wheel2.getMagnitude(), wheel2.getAngle(), wheel3.getMagnitude(),
 				wheel3.getAngle(), wheel4.getMagnitude(), wheel4.getAngle());
-		
+
 		SmartDashboard.putNumber("ENCODER1", getEncoderVal(0));
 		SmartDashboard.putNumber("ENCODER2", getEncoderVal(1));
 		SmartDashboard.putNumber("ENCODER3", getEncoderVal(2));
@@ -201,40 +201,46 @@ public class DriveTrain extends Subsystem {
 		private double angle;
 
 		public Vector(double m, double a) {
-			magnitude = m;
-			angle = a;
+			setAngleMangnitude(a, m);
 		}
+
 		void setAngleMangnitude(double a, double m) {
 			angle = a;
 			magnitude = m;
-			if (this.angle > 90 || this.angle < -90) 
-			{
-				this.magnitude *= -1;
-				this.angle = ((this.angle + 360) % 360) - 180; //plus 360 necessary because of how Java handles modulus of negative numbers
-				
+			if (angle > 90) {
+				magnitude *= -1;
+				angle = angle - 180;
+			} else if (angle < -90) {
+				magnitude *= -1;
+				angle = angle + 180;
 			}
 		}
+
 		double getAngle() {
 			return angle;
 		}
+
 		void setAngle(double a) {
-			angle = a;
+			setAngleMangnitude(a, magnitude);
 		}
+
 		double getMagnitude() {
 			return magnitude;
 		}
+
 		void setMagnitude(double m) {
-			magnitude = m;
+			setAngleMangnitude(angle, m);
 		}
+
 		void add(Vector other) {
 			double otherangle = Math.toRadians(other.getAngle());
- 			double thisangle = Math.toRadians(this.angle);
+			double thisangle = Math.toRadians(this.angle);
 			double rX = (this.magnitude * Math.cos(thisangle)) + (other.getMagnitude() * Math.cos(otherangle));
 			double rY = (this.magnitude * Math.sin(thisangle)) + (other.getMagnitude() * Math.sin(otherangle));
-			
+
 			double tempmagnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			double tempangle = Math.toDegrees(Math.atan2(rY, rX));
-			
+
 			setAngleMangnitude(tempangle, tempmagnitude);
 		}
 	}
