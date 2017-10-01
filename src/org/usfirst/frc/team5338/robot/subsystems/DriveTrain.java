@@ -100,6 +100,11 @@ public class DriveTrain extends Subsystem {
 		pid4.setSetpoint(getEncoderVal(3));
 		pid4.setAbsoluteTolerance(0.25);
 		pid4.enable();
+		Vector vector= new Vector(1,45);
+		vector.add(new Vector(-1,180));
+//		SmartDashboard.putNumber("testcase1",vector.getAngle());
+
+//		SmartDashboard.putNumber("testcase1mag",vector.getMagnitude());
 
 	}
 
@@ -207,13 +212,10 @@ public class DriveTrain extends Subsystem {
 		void setAngleMangnitude(double a, double m) {
 			angle = a;
 			magnitude = m;
-			if (angle > 90) {
-				magnitude *= -1;
-				angle = angle - 180;
-			} else if (angle < -90) {
-				magnitude *= -1;
-				angle = angle + 180;
-			}
+			angle = angle % 360;
+			angle = (angle + 360) % 360;
+			if (angle > 180)  
+			    {angle -= 360;}
 		}
 
 		double getAngle() {
@@ -233,18 +235,40 @@ public class DriveTrain extends Subsystem {
 		}
 
 		void add(Vector other) {
+//			other=new Vector(-1,180);
+//			this.setAngleMangnitude(1, 45);
 			double otherangle = Math.toRadians(other.getAngle());
 			double thisangle = Math.toRadians(this.angle);
 			double rX = (this.magnitude * Math.cos(thisangle)) + (other.getMagnitude() * Math.cos(otherangle));
 			double rY = (this.magnitude * Math.sin(thisangle)) + (other.getMagnitude() * Math.sin(otherangle));
-
+			
 			double tempmagnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			double tempangle = Math.toDegrees(Math.atan2(rY, rX));
+
+
 			tempangle = tempangle % 360;
 			tempangle = (tempangle + 360) % 360;
 			if (tempangle > 180)  
-			    {tempangle -= 360;}
-			setAngleMangnitude(tempangle, tempmagnitude);
+			    {
+				tempangle -= 360;
+				}
+
+			double difangle = (tempangle-this.angle);
+			SmartDashboard.putNumber("ANGLE FROM ADD", difangle);
+			if (difangle > 90) {
+			//	difangle = difangle - 180;
+			//	tempangle -= 180;
+			//	tempangle = difangle + tempangle;
+				setAngleMangnitude(tempangle - 180, tempmagnitude * -1);
+			} else if (difangle < -90) {
+			//	difangle = difangle + 180;
+			//	tempangle = difangle + tempangle;
+				setAngleMangnitude(tempangle + 180, tempmagnitude * -1);
+			}
+			else {
+				setAngleMangnitude(tempangle, tempmagnitude);
+			}
+			
 		}
 	}
 }
