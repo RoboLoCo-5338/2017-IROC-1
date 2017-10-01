@@ -100,17 +100,17 @@ public class DriveTrain extends Subsystem {
 		pid4.setSetpoint(getEncoderVal(3));
 		pid4.setAbsoluteTolerance(0.25);
 		pid4.enable();
-		Vector vector= new Vector(1,45);
-		vector.add(new Vector(-1,180));
-//		SmartDashboard.putNumber("testcase1",vector.getAngle());
-
-//		SmartDashboard.putNumber("testcase1mag",vector.getMagnitude());
+		
 
 	}
 
 	// Sets the default command to run during teleop to joystick driving.
 	public void initDefaultCommand() {
 		setDefaultCommand(new SwerveDriveWithJoysticks());
+		Vector vector= new Vector(1,45);
+		vector.add(new Vector(1,180));
+		SmartDashboard.putNumber("testcase1",vector.getAngle());
+		SmartDashboard.putNumber("testcase1mag",vector.getMagnitude());
 	}
 
 	public void drive(OI oi) {
@@ -201,7 +201,7 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
-	class Vector {
+	public class Vector {
 		private double magnitude;
 		private double angle;
 
@@ -244,17 +244,21 @@ public class DriveTrain extends Subsystem {
 			
 			double tempmagnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			double tempangle = Math.toDegrees(Math.atan2(rY, rX));
-
-
+			if(this.angle==45) {
+			SmartDashboard.putNumber("testcase1ang pre switch",tempangle);
+			}
 			tempangle = tempangle % 360;
 			tempangle = (tempangle + 360) % 360;
 			if (tempangle > 180)  
 			    {
 				tempangle -= 360;
 				}
-
+			if(this.angle==45) {
+				SmartDashboard.putNumber("testcase1angle post mod stuff",tempangle);
+				}
+				
 			double difangle = (tempangle-this.angle);
-			SmartDashboard.putNumber("ANGLE FROM ADD", difangle);
+		//	SmartDashboard.putNumber("ANGLE FROM ADD", difangle);
 			if (difangle > 90) {
 			//	difangle = difangle - 180;
 			//	tempangle -= 180;
@@ -268,7 +272,11 @@ public class DriveTrain extends Subsystem {
 			else {
 				setAngleMangnitude(tempangle, tempmagnitude);
 			}
-			
+			if(true) {
+				SmartDashboard.putNumber("testcase1 angle dif",difangle);
+				SmartDashboard.putNumber("Tempangle end", tempangle);
+			}
+				
 		}
 	}
 }
