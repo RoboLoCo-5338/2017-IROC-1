@@ -126,24 +126,19 @@ public class DriveTrain extends Subsystem {
 			wheelAngle += 360;
 		}
 
-		Vector temp1 = new Vector(wheelAngle, magnitude);
-		Vector temp2 = new Vector(wheelAngle, magnitude);
-		Vector temp3 = new Vector(wheelAngle, magnitude);
-		Vector temp4 = new Vector(wheelAngle, magnitude);
+		wheel1 = new Vector(wheelAngle, magnitude);
+		wheel2 = new Vector(wheelAngle, magnitude);
+		wheel3 = new Vector(wheelAngle, magnitude);
+		wheel4 = new Vector(wheelAngle, magnitude);
 
-		temp1 = temp1.add(new Vector(rotation, 45));
-		temp2 = temp2.add(new Vector(rotation, 135));
-		temp3 = temp3.add(new Vector(rotation, -45));
-		temp4 = temp4.add(new Vector(rotation, -135));
+		wheel1 = wheel1.add(new Vector(rotation, 45));
+		wheel2 = wheel2.add(new Vector(rotation, 135));
+		wheel3 = wheel3.add(new Vector(rotation, -45));
+		wheel4 = wheel4.add(new Vector(rotation, -135));
 		
-		normalize(temp1, temp2, temp3, temp4);
+		normalize(wheel1, wheel2, wheel3, wheel4);
 		
-		drive(temp1, wheel1, temp2, wheel2, temp3, wheel3, temp4, wheel4);
-		
-		wheel1 = temp1;
-		wheel2 = temp2;
-		wheel3 = temp3;
-		wheel4 = temp4;
+		drive(wheel1, wheel2, wheel3, wheel4);
 
 		SmartDashboard.putNumber("ENCODER1", getEncoderVal(0));
 		SmartDashboard.putNumber("ENCODER2", getEncoderVal(1));
@@ -163,23 +158,8 @@ public class DriveTrain extends Subsystem {
 	}
 
 	// Sets output of CANTalons and PID based on the double arguments.
-	public void drive(Vector oneTarget, Vector oneCurrent, Vector twoTarget, Vector twoCurrent, Vector threeTarget, Vector threeCurrent, Vector fourTarget, Vector fourCurrent)
+	public void drive(Vector oneTarget, Vector twoTarget, Vector threeTarget, Vector fourTarget)
 	{
-		SmartDashboard.putNumber("Target Magnitude One B", oneTarget.getMagnitude());
-		if(Math.abs(Math.abs(oneTarget.getAngle()) - Math.abs(oneCurrent.getAngle())) > 90)
-		{
-			oneTarget.setMagnitude(oneTarget.getMagnitude() * -1);
-			if(oneCurrent.getAngle() < 0)
-			{
-				oneTarget.setAngle(oneTarget.getAngle() + (oneTarget.getAngle() - (oneCurrent.getAngle() + 180)));
-			}
-			else
-			{
-				oneTarget.setAngle(oneTarget.getAngle() + (oneTarget.getAngle() - (oneCurrent.getAngle() - 180)));
-			}
-		}
-		SmartDashboard.putNumber("Target Angle One", oneTarget.getAngle());
-		SmartDashboard.putNumber("Target Magnitude One", oneTarget.getMagnitude());
 		pid1.setSetpoint(oneTarget.getAngle());
 		pid2.setSetpoint(twoTarget.getAngle());
 		pid3.setSetpoint(threeTarget.getAngle());
