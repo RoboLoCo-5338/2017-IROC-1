@@ -1,6 +1,7 @@
 package org.usfirst.frc.team5338.robot.subsystems;
 
 import org.usfirst.frc.team5338.robot.OI;
+import org.usfirst.frc.team5338.robot.Robot;
 import org.usfirst.frc.team5338.robot.commands.SwerveDriveWithJoysticks;
 
 import com.ctre.CANTalon;
@@ -109,58 +110,67 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void drive(OI oi) {
-		double magnitude = oi.getLeft('M') * oi.getRight('T');
-		double rotation = oi.getLeft('Z') * oi.getRight('T');
+		double throttle = oi.getLeft('T');
+		double magnitude = oi.getLeft('M') * throttle;
+		double rotation = oi.getLeft('Z') * throttle;
+		double shooter = oi.getRight('T');
 		double heading = ahrs.getYaw();
-		
+
 		if (magnitude != 0) {
 			angle = oi.getLeft('A');
 		}
-		SmartDashboard.putNumber("ANGLE", oi.getLeft('A'));
-		
+
 		double wheelAngle = (angle - heading);
 		if (wheelAngle > 180) {
 			wheelAngle -= 360;
 		} else if (wheelAngle < -180) {
 			wheelAngle += 360;
 		}
-
-		wheel1.setAngleMangnitude(wheelAngle, magnitude);
-		wheel2.setAngleMangnitude(wheelAngle, magnitude);
-		wheel3.setAngleMangnitude(wheelAngle, magnitude);
-		wheel4.setAngleMangnitude(wheelAngle, magnitude);
-
-		if (rotation != 0) {
+		
+		wheel1.setMagnitude(0);
+		wheel2.setMagnitude(0);
+		wheel3.setMagnitude(0);
+		wheel4.setMagnitude(0);
+		
+		if (!Robot.oi.get(OI.Button.NOTRANSLATION)) {
+			wheel1.setAngleMagnitude(wheelAngle, magnitude);
+			wheel2.setAngleMagnitude(wheelAngle, magnitude);
+			wheel3.setAngleMagnitude(wheelAngle, magnitude);
+			wheel4.setAngleMagnitude(wheelAngle, magnitude);
+		}
+		if (!Robot.oi.get(OI.Button.NOROTATION)) {
 			wheel1.add(new Vector(rotation, 45));
 			wheel2.add(new Vector(rotation, 135));
 			wheel3.add(new Vector(rotation, -45));
 			wheel4.add(new Vector(rotation, -135));
 		}
 
-		drive(wheel1.getMagnitude(), wheel1.getAngle(), wheel2.getMagnitude(), wheel2.getAngle(), wheel3.getMagnitude(),
-				wheel3.getAngle(), wheel4.getMagnitude(), wheel4.getAngle());
+		drive(wheel1, wheel2, wheel3, wheel4);
 		
-		SmartDashboard.putNumber("ENCODER1", getEncoderVal(0));
-		SmartDashboard.putNumber("ENCODER2", getEncoderVal(1));
-		SmartDashboard.putNumber("ENCODER3", getEncoderVal(2));
-		SmartDashboard.putNumber("ENCODER4", getEncoderVal(3));
+		SmartDashboard.putNumber("ENCODER 1", ENCODER1.getAverageValue());
+		SmartDashboard.putNumber("ENCODER 2", ENCODER2.getAverageValue());
+		SmartDashboard.putNumber("ENCODER 3", ENCODER3.getAverageValue());
+		SmartDashboard.putNumber("ENCODER 4", ENCODER4.getAverageValue());
+		SmartDashboard.putNumber("ANG:ENCODER 1", getEncoderVal(0));
+		SmartDashboard.putNumber("ANG:ENCODER 2", getEncoderVal(1));
+		SmartDashboard.putNumber("ANG:ENCODER 3", getEncoderVal(2));
+		SmartDashboard.putNumber("ANG:ENCODER 4", getEncoderVal(3));
 	}
 
 	// Sets output of CANTalons and PID based on the double arguments.
-	public void drive(double motor1, double angle1, double motor2, double angle2, double motor3, double angle3,
-			double motor4, double angle4) {
-		pid1.setSetpoint(angle1);
-		pid2.setSetpoint(angle2);
-		pid3.setSetpoint(angle3);
-		pid4.setSetpoint(angle4);
-		DRIVEMOTOR1.set(motor1);
-		DRIVEMOTOR2.set(motor2);
-		DRIVEMOTOR3.set(motor3);
-		DRIVEMOTOR4.set(motor4);
+	public void drive(Vector one, Vector two, Vector three, Vector four) {
+		pid1.setSetpoint(one.getAngle());
+		pid2.setSetpoint(two.getAngle());
+		pid3.setSetpoint(three.getAngle());
+		pid4.setSetpoint(four.getAngle());
+		DRIVEMOTOR1.set(one.getMagnitude());
+		DRIVEMOTOR2.set(two.getMagnitude());
+		DRIVEMOTOR3.set(three.getMagnitude());
+		DRIVEMOTOR4.set(four.getMagnitude());
 	}
 
 	public double getEncoderVal(int encoder) {
-		int[] defaults = { 13125, 15481, 15812, 60876 };
+		int[] defaults = { 13190, 16759, 16000, 51650 };
 		if (encoder == 0) {
 			return (((ENCODER1.getAverageValue() - defaults[0] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 1) {
@@ -204,23 +214,30 @@ public class DriveTrain extends Subsystem {
 		public Vector(double m, double a) {
 			magnitude = m;
 			angle = a;
+
 		}
-		void setAngleMangnitude(double a, double m) {
+
+		void setAngleMagnitude(double a, double m) {
 			angle = a;
 			magnitude = m;
 		}
+
 		double getAngle() {
 			return angle;
 		}
+
 		void setAngle(double a) {
 			angle = a;
 		}
+
 		double getMagnitude() {
 			return magnitude;
 		}
+
 		void setMagnitude(double m) {
 			magnitude = m;
 		}
+
 		void add(Vector other) {
 			other = new Vector(other.getMagnitude(), Math.toRadians(other.getAngle()));
 			this.setAngle(Math.toRadians(this.angle));

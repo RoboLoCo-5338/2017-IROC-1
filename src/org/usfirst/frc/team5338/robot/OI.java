@@ -9,7 +9,7 @@ public class OI {
 
 	// Button enum definition for all usable buttons.
 	public enum Button {
-		BUTTON1, BUTTON2, BUTTON3, BUTTON4
+		NOROTATION, NOTRANSLATION, SHOOT, CLIMB
 	}
 
 	// OI object constructor.
@@ -20,13 +20,13 @@ public class OI {
 	// argument.
 	public boolean get(Button button) {
 		switch (button) {
-		case BUTTON1: // Returns left joystick trigger status
+		case NOROTATION: // Returns left joystick trigger status
 			return joyLeft.getRawButton(1);
-		case BUTTON2: // Returns right joystick trigger status
-			return joyRight.getRawButton(1);
-		case BUTTON3: // Returns left joystick side button status
+		case CLIMB: // Returns right joystick trigger status
 			return joyLeft.getRawButton(2);
-		case BUTTON4: // Returns right joystick side button status
+		case NOTRANSLATION: // Returns left joystick side button status
+			return joyRight.getRawButton(1);
+		case SHOOT: // Returns right joystick side button status
 			return joyRight.getRawButton(2);
 		default:
 			return false;
