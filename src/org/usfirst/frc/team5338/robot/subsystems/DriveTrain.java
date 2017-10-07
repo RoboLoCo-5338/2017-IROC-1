@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.lang.Math;
+
 public class DriveTrain extends Subsystem {
 	// Creates the eight CANTalon motor controller objects.
 	private final CANTalon DRIVESTEERING1 = new CANTalon(11);
@@ -146,15 +148,17 @@ public class DriveTrain extends Subsystem {
 		}
 
 		drive(wheel1, wheel2, wheel3, wheel4);
-		
-		SmartDashboard.putNumber("ENCODER 1", ENCODER1.getAverageValue());
-		SmartDashboard.putNumber("ENCODER 2", ENCODER2.getAverageValue());
-		SmartDashboard.putNumber("ENCODER 3", ENCODER3.getAverageValue());
-		SmartDashboard.putNumber("ENCODER 4", ENCODER4.getAverageValue());
-		SmartDashboard.putNumber("ANG:ENCODER 1", getEncoderVal(0));
-		SmartDashboard.putNumber("ANG:ENCODER 2", getEncoderVal(1));
-		SmartDashboard.putNumber("ANG:ENCODER 3", getEncoderVal(2));
-		SmartDashboard.putNumber("ANG:ENCODER 4", getEncoderVal(3));
+	}
+	public void normalize(Vector one, Vector two, Vector three, Vector four)
+	{
+		double max = Math.max(Math.max(one.getMagnitude(), two.getMagnitude()), Math.max(three.getMagnitude(), four.getMagnitude()));
+		if(max >= 1)
+		{
+		one.setMagnitude(one.getMagnitude()/max);
+		two.setMagnitude(two.getMagnitude()/max);
+		three.setMagnitude(three.getMagnitude()/max);
+		four.setMagnitude(four.getMagnitude()/max);
+		}
 	}
 
 	// Sets output of CANTalons and PID based on the double arguments.
@@ -184,6 +188,7 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
+	
 	class EncoderPID implements PIDSource {
 		public int encoder;
 
@@ -207,14 +212,13 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
-	class Vector {
+	public class Vector {
 		private double magnitude;
 		private double angle;
 
 		public Vector(double m, double a) {
 			magnitude = m;
 			angle = a;
-
 		}
 
 		void setAngleMagnitude(double a, double m) {
@@ -227,7 +231,7 @@ public class DriveTrain extends Subsystem {
 		}
 
 		void setAngle(double a) {
-			angle = a;
+			setAngleMagnitude(a, magnitude);
 		}
 
 		double getMagnitude() {
@@ -235,7 +239,7 @@ public class DriveTrain extends Subsystem {
 		}
 
 		void setMagnitude(double m) {
-			magnitude = m;
+			setAngleMagnitude(angle, m);
 		}
 
 		void add(Vector other) {
@@ -246,5 +250,9 @@ public class DriveTrain extends Subsystem {
 			this.magnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			this.angle = Math.toDegrees(Math.atan2(rY, rX));
 		}
+		void setXY() {
+			x = magnitude * Math.cos(Math.toRadians(angle));
+			y = magnitude * Math.sin(Math.toRadians(angle));
+		}
+		}
 	}
-}
