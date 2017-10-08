@@ -13,9 +13,6 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.lang.Math;
 
 public class DriveTrain extends Subsystem {
 	// Creates the eight CANTalon motor controller objects.
@@ -128,18 +125,23 @@ public class DriveTrain extends Subsystem {
 		} else if (wheelAngle < -180) {
 			wheelAngle += 360;
 		}
-		
+
 		wheel1.setMagnitude(0);
 		wheel2.setMagnitude(0);
 		wheel3.setMagnitude(0);
 		wheel4.setMagnitude(0);
-		
+
 		if (!Robot.oi.get(OI.Button.NOTRANSLATION)) {
 			wheel1.setAngleMagnitude(wheelAngle, magnitude);
 			wheel2.setAngleMagnitude(wheelAngle, magnitude);
 			wheel3.setAngleMagnitude(wheelAngle, magnitude);
 			wheel4.setAngleMagnitude(wheelAngle, magnitude);
 		}
+		else
+		{
+			rotation = oi.getRight('Z') * throttle / 2;
+		}
+		
 		if (!Robot.oi.get(OI.Button.NOROTATION)) {
 			wheel1.add(new Vector(rotation, 45));
 			wheel2.add(new Vector(rotation, 135));
@@ -147,17 +149,26 @@ public class DriveTrain extends Subsystem {
 			wheel4.add(new Vector(rotation, -135));
 		}
 
+		normalize(wheel1, wheel2, wheel3, wheel4);
+		
+		if(magnitude == 0 && rotation == 0)
+		{
+			wheel1.setAngleMagnitude(pid1.getSetpoint(), 0);
+			wheel2.setAngleMagnitude(pid2.getSetpoint(), 0);
+			wheel3.setAngleMagnitude(pid3.getSetpoint(), 0);
+			wheel4.setAngleMagnitude(pid4.getSetpoint(), 0);
+		}
 		drive(wheel1, wheel2, wheel3, wheel4);
 	}
-	public void normalize(Vector one, Vector two, Vector three, Vector four)
-	{
-		double max = Math.max(Math.max(one.getMagnitude(), two.getMagnitude()), Math.max(three.getMagnitude(), four.getMagnitude()));
-		if(max >= 1)
-		{
-		one.setMagnitude(one.getMagnitude()/max);
-		two.setMagnitude(two.getMagnitude()/max);
-		three.setMagnitude(three.getMagnitude()/max);
-		four.setMagnitude(four.getMagnitude()/max);
+
+	public void normalize(Vector one, Vector two, Vector three, Vector four) {
+		double max = Math.max(Math.max(one.getMagnitude(), two.getMagnitude()),
+				Math.max(three.getMagnitude(), four.getMagnitude()));
+		if (max >= 1) {
+			one.setMagnitude(one.getMagnitude() / max);
+			two.setMagnitude(two.getMagnitude() / max);
+			three.setMagnitude(three.getMagnitude() / max);
+			four.setMagnitude(four.getMagnitude() / max);
 		}
 	}
 
@@ -188,7 +199,6 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 
-	
 	class EncoderPID implements PIDSource {
 		public int encoder;
 
@@ -250,9 +260,5 @@ public class DriveTrain extends Subsystem {
 			this.magnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
 			this.angle = Math.toDegrees(Math.atan2(rY, rX));
 		}
-		void setXY() {
-			x = magnitude * Math.cos(Math.toRadians(angle));
-			y = magnitude * Math.sin(Math.toRadians(angle));
-		}
-		}
 	}
+}
