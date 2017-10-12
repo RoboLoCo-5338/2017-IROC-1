@@ -31,6 +31,7 @@ public class DriveTrain extends Subsystem {
 	private final AnalogInput ENCODER3 = new AnalogInput(2);
 	private final AnalogInput ENCODER4 = new AnalogInput(3);
 
+	// Creates the four PIDController objects for the encoders.
 	private final PIDController pid1 = new PIDController(0.055, 0, 0, new EncoderPID(0), DRIVESTEERING1, 0.001);
 	private final PIDController pid2 = new PIDController(0.055, 0, 0, new EncoderPID(1), DRIVESTEERING2, 0.001);
 	private final PIDController pid3 = new PIDController(0.055, 0, 0, new EncoderPID(2), DRIVESTEERING3, 0.001);
@@ -73,34 +74,15 @@ public class DriveTrain extends Subsystem {
 		DRIVESTEERING3.setInverted(true);
 		DRIVESTEERING4.setInverted(true);
 
-		pid1.setInputRange(-180, 180);
-		pid1.setContinuous(true);
-		pid1.setOutputRange(-1, 1);
-		pid1.setSetpoint(getEncoderVal(0));
-		pid1.setAbsoluteTolerance(0.25);
-		pid1.enable();
-
-		pid2.setInputRange(-180, 180);
-		pid2.setContinuous(true);
-		pid2.setOutputRange(-1, 1);
-		pid2.setSetpoint(getEncoderVal(1));
-		pid2.setAbsoluteTolerance(0.25);
-		pid2.enable();
-
-		pid3.setInputRange(-180, 180);
-		pid3.setContinuous(true);
-		pid3.setOutputRange(-1, 1);
-		pid3.setSetpoint(getEncoderVal(2));
-		pid3.setAbsoluteTolerance(0.25);
-		pid3.enable();
-
-		pid4.setInputRange(-180, 180);
-		pid4.setContinuous(true);
-		pid4.setOutputRange(-1, 1);
-		pid4.setSetpoint(getEncoderVal(3));
-		pid4.setAbsoluteTolerance(0.25);
-		pid4.enable();
-
+		for(PIDController controller: new PIDController[] {pid1, pid2, pid3, pid4})
+		{
+			controller.setInputRange(-180, 180);
+			controller.setContinuous(true);
+			controller.setOutputRange(-1, 1);
+			controller.setSetpoint(getEncoderVal(0));
+			controller.setAbsoluteTolerance(0.25);
+			controller.enable();
+		}
 	}
 
 	// Sets the default command to run during teleop to joystick driving.
@@ -131,18 +113,16 @@ public class DriveTrain extends Subsystem {
 		wheel3.setMagnitude(0);
 		wheel4.setMagnitude(0);
 
-		if (!Robot.oi.get(OI.Button.NOTRANSLATION)) {
+		if (!Robot.oi.get(OI.Button.NO_TRANSLATION)) {
 			wheel1.setAngleMagnitude(wheelAngle, magnitude);
 			wheel2.setAngleMagnitude(wheelAngle, magnitude);
 			wheel3.setAngleMagnitude(wheelAngle, magnitude);
 			wheel4.setAngleMagnitude(wheelAngle, magnitude);
-		}
-		else
-		{
+		} else {
 			rotation = oi.getRight('Z') * throttle / 2;
 		}
-		
-		if (!Robot.oi.get(OI.Button.NOROTATION)) {
+
+		if (!Robot.oi.get(OI.Button.NO_ROTATION)) {
 			wheel1.add(new Vector(rotation, 45));
 			wheel2.add(new Vector(rotation, 135));
 			wheel3.add(new Vector(rotation, -45));
@@ -150,9 +130,8 @@ public class DriveTrain extends Subsystem {
 		}
 
 		normalize(wheel1, wheel2, wheel3, wheel4);
-		
-		if(magnitude == 0 && rotation == 0)
-		{
+
+		if (magnitude == 0 && rotation == 0) {
 			wheel1.setAngleMagnitude(pid1.getSetpoint(), 0);
 			wheel2.setAngleMagnitude(pid2.getSetpoint(), 0);
 			wheel3.setAngleMagnitude(pid3.getSetpoint(), 0);
@@ -241,7 +220,7 @@ public class DriveTrain extends Subsystem {
 		}
 
 		void setAngle(double a) {
-			setAngleMagnitude(a, magnitude);
+			angle = a;
 		}
 
 		double getMagnitude() {
@@ -249,16 +228,16 @@ public class DriveTrain extends Subsystem {
 		}
 
 		void setMagnitude(double m) {
-			setAngleMagnitude(angle, m);
+			magnitude = m;
 		}
 
 		void add(Vector other) {
-			other = new Vector(other.getMagnitude(), Math.toRadians(other.getAngle()));
-			this.setAngle(Math.toRadians(this.angle));
-			double rX = (this.magnitude * Math.cos(this.angle)) + (other.getMagnitude() * Math.cos(other.getAngle()));
-			double rY = (this.magnitude * Math.sin(this.angle)) + (other.getMagnitude() * Math.sin(other.getAngle()));
-			this.magnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
-			this.angle = Math.toDegrees(Math.atan2(rY, rX));
+			double otherAngleRadians = Math.toRadians(other.angle);
+			double thisAngleRadians = Math.toRadians(angle);
+			double rX = magnitude * Math.cos(thisAngleRadians) + other.magnitude * Math.cos(otherAngleRadians);
+			double rY = magnitude * Math.sin(thisAngleRadians) + other.magnitude * Math.sin(otherAngleRadians);
+			magnitude = Math.sqrt((Math.pow(rX, 2) + Math.pow(rY, 2)));
+			angle = Math.toDegrees(Math.atan2(rY, rX));
 		}
 	}
 }
