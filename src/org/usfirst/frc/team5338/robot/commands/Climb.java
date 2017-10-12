@@ -4,23 +4,20 @@ import org.usfirst.frc.team5338.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class LiftRobot extends Command {
-    public LiftRobot() {
-	requires(Robot.wincher);
+public class Climb extends Command {
+    public Climb() {
+	requires(Robot.winch);
     }
 
-    @Override
     protected void execute() {
-	Robot.wincher.liftRobot(Robot.oi);
+	Robot.winch.liftRobot(Robot.oi);
     }
 
-    @Override
     protected boolean isFinished() {
 	return false;
     }
 
-    @Override
     protected void end() {
-	Robot.wincher.stopLift();
+	Robot.winch.stopLift();
     }
 }

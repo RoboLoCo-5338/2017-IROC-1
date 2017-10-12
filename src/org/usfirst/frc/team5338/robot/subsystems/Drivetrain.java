@@ -2,7 +2,7 @@ package org.usfirst.frc.team5338.robot.subsystems;
 
 import org.usfirst.frc.team5338.robot.OI;
 import org.usfirst.frc.team5338.robot.Robot;
-import org.usfirst.frc.team5338.robot.commands.SwerveDriveWithJoysticks;
+import org.usfirst.frc.team5338.robot.commands.SwerveDrive;
 
 import com.ctre.CANTalon;
 import com.kauailabs.navx.frc.AHRS;
@@ -14,29 +14,30 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class DriveTrain extends Subsystem {
+public class Drivetrain extends Subsystem {
 	// Creates the eight CANTalon motor controller objects.
-	private final CANTalon DRIVESTEERING1 = new CANTalon(11);
-	private final CANTalon DRIVEMOTOR1 = new CANTalon(12);
-	private final CANTalon DRIVESTEERING2 = new CANTalon(21);
-	private final CANTalon DRIVEMOTOR2 = new CANTalon(22);
-	private final CANTalon DRIVESTEERING3 = new CANTalon(31);
-	private final CANTalon DRIVEMOTOR3 = new CANTalon(32);
-	private final CANTalon DRIVESTEERING4 = new CANTalon(41);
-	private final CANTalon DRIVEMOTOR4 = new CANTalon(42);
+	private final CANTalon DRIVE_STEERING_1 = new CANTalon(11);
+	private final CANTalon DRIVE_MOTOR_1 = new CANTalon(12);
+	private final CANTalon DRIVE_STEERING_2 = new CANTalon(21);
+	private final CANTalon DRIVE_MOTOR_2 = new CANTalon(22);
+	private final CANTalon DRIVE_STEERING_3 = new CANTalon(31);
+	private final CANTalon DRIVE_MOTOR_3 = new CANTalon(32);
+	private final CANTalon DRIVE_STEERING_4 = new CANTalon(41);
+	private final CANTalon DRIVE_MOTOR_4 = new CANTalon(42);
 
 	// Creates the four AnalogInput objects for the encoders.
-	private final AnalogInput ENCODER1 = new AnalogInput(0);
-	private final AnalogInput ENCODER2 = new AnalogInput(1);
-	private final AnalogInput ENCODER3 = new AnalogInput(2);
-	private final AnalogInput ENCODER4 = new AnalogInput(3);
+	private final AnalogInput ENCODER_1 = new AnalogInput(0);
+	private final AnalogInput ENCODER_2 = new AnalogInput(1);
+	private final AnalogInput ENCODER_3 = new AnalogInput(2);
+	private final AnalogInput ENCODER_4 = new AnalogInput(3);
 
-	// Creates the four PIDController objects for the encoders.
-	private final PIDController pid1 = new PIDController(0.055, 0, 0, new EncoderPID(0), DRIVESTEERING1, 0.001);
-	private final PIDController pid2 = new PIDController(0.055, 0, 0, new EncoderPID(1), DRIVESTEERING2, 0.001);
-	private final PIDController pid3 = new PIDController(0.055, 0, 0, new EncoderPID(2), DRIVESTEERING3, 0.001);
-	private final PIDController pid4 = new PIDController(0.055, 0, 0, new EncoderPID(3), DRIVESTEERING4, 0.001);
+	// Creates the four PIDController objects for the wheel modules.
+	private final PIDController PID_1 = new PIDController(0.055, 0, 0, new EncoderPID(0), DRIVE_STEERING_1, 0.001);
+	private final PIDController PID_2 = new PIDController(0.055, 0, 0, new EncoderPID(1), DRIVE_STEERING_2, 0.001);
+	private final PIDController PID_3 = new PIDController(0.055, 0, 0, new EncoderPID(2), DRIVE_STEERING_3, 0.001);
+	private final PIDController PID_4 = new PIDController(0.055, 0, 0, new EncoderPID(3), DRIVE_STEERING_4, 0.001);
 
+	// Creates the four Vector objects for the wheel modules.
 	private Vector wheel1 = new Vector(0, 0);
 	private Vector wheel2 = new Vector(0, 0);
 	private Vector wheel3 = new Vector(0, 0);
@@ -44,38 +45,34 @@ public class DriveTrain extends Subsystem {
 
 	private double angle;
 
-	private static final AHRS ahrs = new AHRS(SPI.Port.kMXP, (byte) (200));
+	private static final AHRS AHRS = new AHRS(SPI.Port.kMXP, (byte) (200));
 
 	// DriveTrain object constructor which configures encoders and reverses
 	// output
 	// of backwards motors.
-	public DriveTrain() {
+	public Drivetrain() {
 		super();
-		while (ahrs.isCalibrating() || ahrs.isMagnetometerCalibrated()) {
+
+		while (AHRS.isCalibrating() || AHRS.isMagnetometerCalibrated()) {
 		}
-		ahrs.reset();
-		ahrs.zeroYaw();
+		AHRS.reset();
+		AHRS.zeroYaw();
 
-		ENCODER1.setOversampleBits(4);
-		ENCODER1.setAverageBits(4);
-		ENCODER2.setOversampleBits(4);
-		ENCODER2.setAverageBits(4);
-		ENCODER3.setOversampleBits(4);
-		ENCODER3.setAverageBits(4);
-		ENCODER4.setOversampleBits(4);
-		ENCODER4.setAverageBits(4);
+		for (AnalogInput encoder : new AnalogInput[] { ENCODER_1, ENCODER_2, ENCODER_3, ENCODER_4 }) {
+			encoder.setOversampleBits(4);
+			encoder.setAverageBits(4);
+		}
 
-		DRIVEMOTOR1.setInverted(false);
-		DRIVEMOTOR2.setInverted(false);
-		DRIVEMOTOR3.setInverted(false);
-		DRIVEMOTOR4.setInverted(false);
-		DRIVESTEERING1.setInverted(true);
-		DRIVESTEERING2.setInverted(true);
-		DRIVESTEERING3.setInverted(true);
-		DRIVESTEERING4.setInverted(true);
+		for (CANTalon controller : new CANTalon[] { DRIVE_MOTOR_1, DRIVE_MOTOR_2, DRIVE_MOTOR_3, DRIVE_MOTOR_4 }) {
+			controller.setInverted(false);
+		}
 
-		for(PIDController controller: new PIDController[] {pid1, pid2, pid3, pid4})
-		{
+		for (CANTalon controller : new CANTalon[] { DRIVE_STEERING_1, DRIVE_STEERING_2, DRIVE_STEERING_3,
+				DRIVE_STEERING_4 }) {
+			controller.setInverted(true);
+		}
+
+		for (PIDController controller : new PIDController[] { PID_1, PID_2, PID_3, PID_4 }) {
 			controller.setInputRange(-180, 180);
 			controller.setContinuous(true);
 			controller.setOutputRange(-1, 1);
@@ -87,7 +84,7 @@ public class DriveTrain extends Subsystem {
 
 	// Sets the default command to run during teleop to joystick driving.
 	public void initDefaultCommand() {
-		setDefaultCommand(new SwerveDriveWithJoysticks());
+		setDefaultCommand(new SwerveDrive());
 	}
 
 	public void drive(OI oi) {
@@ -95,7 +92,10 @@ public class DriveTrain extends Subsystem {
 		double magnitude = oi.getLeft('M') * throttle;
 		double rotation = oi.getLeft('Z') * throttle;
 		double shooter = oi.getRight('T');
-		double heading = ahrs.getYaw();
+		if (Robot.oi.get(OI.Button.RESET_YAW_1) && Robot.oi.get(OI.Button.RESET_YAW_2)) {
+			AHRS.zeroYaw();
+		}
+		double heading = AHRS.getYaw();
 
 		if (magnitude != 0) {
 			angle = oi.getLeft('A');
@@ -108,16 +108,14 @@ public class DriveTrain extends Subsystem {
 			wheelAngle += 360;
 		}
 
-		wheel1.setMagnitude(0);
-		wheel2.setMagnitude(0);
-		wheel3.setMagnitude(0);
-		wheel4.setMagnitude(0);
+		for (Vector wheel : new Vector[] { wheel1, wheel2, wheel3, wheel4 }) {
+			wheel.setMagnitude(0.0);
+		}
 
 		if (!Robot.oi.get(OI.Button.NO_TRANSLATION)) {
-			wheel1.setAngleMagnitude(wheelAngle, magnitude);
-			wheel2.setAngleMagnitude(wheelAngle, magnitude);
-			wheel3.setAngleMagnitude(wheelAngle, magnitude);
-			wheel4.setAngleMagnitude(wheelAngle, magnitude);
+			for (Vector wheel : new Vector[] { wheel1, wheel2, wheel3, wheel4 }) {
+				wheel.setAngleMagnitude(wheelAngle, magnitude);
+			}
 		} else {
 			rotation = oi.getRight('Z') * throttle / 2;
 		}
@@ -129,21 +127,22 @@ public class DriveTrain extends Subsystem {
 			wheel4.add(new Vector(rotation, -135));
 		}
 
+		if (magnitude == 0 && rotation == 0) {
+			wheel1.setAngleMagnitude(PID_1.getSetpoint(), 0);
+			wheel2.setAngleMagnitude(PID_2.getSetpoint(), 0);
+			wheel3.setAngleMagnitude(PID_3.getSetpoint(), 0);
+			wheel4.setAngleMagnitude(PID_4.getSetpoint(), 0);
+		}
+
 		normalize(wheel1, wheel2, wheel3, wheel4);
 
-		if (magnitude == 0 && rotation == 0) {
-			wheel1.setAngleMagnitude(pid1.getSetpoint(), 0);
-			wheel2.setAngleMagnitude(pid2.getSetpoint(), 0);
-			wheel3.setAngleMagnitude(pid3.getSetpoint(), 0);
-			wheel4.setAngleMagnitude(pid4.getSetpoint(), 0);
-		}
 		drive(wheel1, wheel2, wheel3, wheel4);
 	}
 
 	public void normalize(Vector one, Vector two, Vector three, Vector four) {
 		double max = Math.max(Math.max(one.getMagnitude(), two.getMagnitude()),
 				Math.max(three.getMagnitude(), four.getMagnitude()));
-		if (max >= 1) {
+		if (max > 1) {
 			one.setMagnitude(one.getMagnitude() / max);
 			two.setMagnitude(two.getMagnitude() / max);
 			three.setMagnitude(three.getMagnitude() / max);
@@ -153,26 +152,26 @@ public class DriveTrain extends Subsystem {
 
 	// Sets output of CANTalons and PID based on the double arguments.
 	public void drive(Vector one, Vector two, Vector three, Vector four) {
-		pid1.setSetpoint(one.getAngle());
-		pid2.setSetpoint(two.getAngle());
-		pid3.setSetpoint(three.getAngle());
-		pid4.setSetpoint(four.getAngle());
-		DRIVEMOTOR1.set(one.getMagnitude());
-		DRIVEMOTOR2.set(two.getMagnitude());
-		DRIVEMOTOR3.set(three.getMagnitude());
-		DRIVEMOTOR4.set(four.getMagnitude());
+		PID_1.setSetpoint(one.getAngle());
+		PID_2.setSetpoint(two.getAngle());
+		PID_3.setSetpoint(three.getAngle());
+		PID_4.setSetpoint(four.getAngle());
+		DRIVE_MOTOR_1.set(one.getMagnitude());
+		DRIVE_MOTOR_2.set(two.getMagnitude());
+		DRIVE_MOTOR_3.set(three.getMagnitude());
+		DRIVE_MOTOR_4.set(four.getMagnitude());
 	}
 
 	public double getEncoderVal(int encoder) {
-		int[] defaults = { 13190, 16759, 16000, 51650 };
+		final int[] ZERO_CONSTANTS = { 13190, 16759, 16000, 51650 };
 		if (encoder == 0) {
-			return (((ENCODER1.getAverageValue() - defaults[0] + 65535) % 65536) / 65535.0) * -360.0 + 180;
+			return (((ENCODER_1.getAverageValue() - ZERO_CONSTANTS[0] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 1) {
-			return (((ENCODER2.getAverageValue() - defaults[1] + 65535) % 65536) / 65535.0) * -360.0 + 180;
+			return (((ENCODER_2.getAverageValue() - ZERO_CONSTANTS[1] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 2) {
-			return (((ENCODER3.getAverageValue() - defaults[2] + 65535) % 65536) / 65535.0) * -360.0 + 180;
+			return (((ENCODER_3.getAverageValue() - ZERO_CONSTANTS[2] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 3) {
-			return (((ENCODER4.getAverageValue() - defaults[3] + 65535) % 65536) / 65535.0) * -360.0 + 180;
+			return (((ENCODER_4.getAverageValue() - ZERO_CONSTANTS[3] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else {
 			return -1.0;
 		}
@@ -185,17 +184,14 @@ public class DriveTrain extends Subsystem {
 			this.encoder = encoder;
 		}
 
-		@Override
 		public void setPIDSourceType(PIDSourceType pidSource) {
-			ENCODER1.setPIDSourceType(pidSource);
+			ENCODER_1.setPIDSourceType(pidSource);
 		}
 
-		@Override
 		public PIDSourceType getPIDSourceType() {
-			return ENCODER1.getPIDSourceType();
+			return ENCODER_1.getPIDSourceType();
 		}
 
-		@Override
 		public double pidGet() {
 			return getEncoderVal(encoder);
 		}

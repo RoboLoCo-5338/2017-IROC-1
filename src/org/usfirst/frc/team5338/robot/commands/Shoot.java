@@ -4,11 +4,7 @@ import org.usfirst.frc.team5338.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-/**
- *
- */
 public class Shoot extends Command {
-
 	public Shoot() {
 		requires(Robot.shooter);
 	}
