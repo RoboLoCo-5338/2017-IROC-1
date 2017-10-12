@@ -4,10 +4,10 @@ import org.usfirst.frc.team5338.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class SwerveDriveWithJoysticks extends Command {
+public class SwerveDrive extends Command {
 	// SwerveDriveWithJoysticks object constructor requires the drivetrain for the
 	// command.
-	public SwerveDriveWithJoysticks() {
+	public SwerveDrive() {
 		requires(Robot.drivetrain);
 	}
 
