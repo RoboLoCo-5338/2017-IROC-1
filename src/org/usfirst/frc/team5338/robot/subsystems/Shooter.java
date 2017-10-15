@@ -22,8 +22,10 @@ public class Shooter extends Subsystem {
 		SHOOTER_1.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		SHOOTER_2.changeControlMode(TalonControlMode.Follower);
 		SHOOTER_2.set(SHOOTER_1.getDeviceID());
+		SHOOTER_1.reverseOutput(true);
+		SHOOTER_2.reverseOutput(true);
 		SHOOTER_1.configNominalOutputVoltage(+0.0f, -0.0f);
-		SHOOTER_1.configPeakOutputVoltage(+12.0f, 0.0f);
+		SHOOTER_1.configPeakOutputVoltage(+12.0f, -12.0f);
 		SHOOTER_1.setProfile(0);
 		SHOOTER_1.setF((1 * 1023) / (-13000 * 4096.0 / 600.0));
 		SHOOTER_1.setP((0.6 * 1023) / -500);
@@ -38,9 +40,9 @@ public class Shooter extends Subsystem {
 
 	// Gets joysticks input and calls the drive function with arguments.
 	public void shoot() {
-		INTAKE.set(-0.75);
+		INTAKE.set(-0.3);
 		SHOOTER_1.changeControlMode(TalonControlMode.Speed);
-		SHOOTER_1.set(-5000);
-		SmartDashboard.putNumber("Speed", SHOOTER_1.getSpeed());
+		SHOOTER_1.set(6000);
+		SmartDashboard.putNumber("SPEED", SHOOTER_1.getSpeed());
 	}
 }

@@ -18,9 +18,11 @@ public class Winch extends Subsystem {
 	}
 
 	public void liftRobot(OI oi) {
-		if (oi.get(OI.Button.CLIMB)) {
-			LIFT.set(0.99);
+		if (oi.get(OI.Button.SLOW_CLIMB)) {
+			LIFT.set(0.25);
 			return;
+		} else if (oi.get(OI.Button.FAST_CLIMB)) {
+			LIFT.set(0.99);
 		} else {
 			stopLift();
 		}

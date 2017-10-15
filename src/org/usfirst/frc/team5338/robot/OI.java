@@ -3,13 +3,12 @@ package org.usfirst.frc.team5338.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class OI {
-	// Creates the two Joystick objects.
-	private final Joystick joyLeft = new Joystick(0);
-	private final Joystick joyRight = new Joystick(1);
+	// Creates the Joystick object.
+	private final Joystick joystick = new Joystick(0);
 
 	// Button enum definition for all usable buttons on both controllers.
 	public enum Button {
-		NO_ROTATION, NO_TRANSLATION, SHOOT, CLIMB, RESET_YAW_1, RESET_YAW_2
+		NO_ROTATION, NO_TRANSLATION, SLOW_CLIMB, FAST_CLIMB, SHOOT, RESET_YAW_1, RESET_YAW_2,
 	}
 
 	// OI object constructor.
@@ -20,18 +19,20 @@ public class OI {
 	// argument.
 	public boolean get(Button button) {
 		switch (button) {
-		case NO_ROTATION: // Returns left joystick trigger status
-			return joyLeft.getRawButton(1);
-		case CLIMB: // Returns right joystick trigger status
-			return joyLeft.getRawButton(2);
-		case NO_TRANSLATION: // Returns left joystick side button status
-			return joyRight.getRawButton(1);
-		case SHOOT: // Returns right joystick side button status
-			return joyRight.getRawButton(2);
+		case NO_ROTATION: // Returns joystick trigger status
+			return joystick.getRawButton(1);
+		case NO_TRANSLATION: // Returns joystick side button status
+			return joystick.getRawButton(2);
+		case SLOW_CLIMB: // Returns joystick button 3 status
+			return joystick.getRawButton(3);
+		case FAST_CLIMB: // Returns joystick button 5 status
+			return joystick.getRawButton(5);
+		case SHOOT: // Returns joystick button 4 status
+			return joystick.getRawButton(4);
 		case RESET_YAW_1: // Returns left joystick button 7 status
-			return joyLeft.getRawButton(7);
+			return joystick.getRawButton(7);
 		case RESET_YAW_2: // Returns left joystick button 8 status
-			return joyLeft.getRawButton(8);
+			return joystick.getRawButton(8);
 		default:
 			return false;
 		}
@@ -49,21 +50,21 @@ public class OI {
 	}
 
 	// Gets double joystick values based on character argument
-	public double getLeft(Character input) {
+	public double get(Character input) {
 		switch (input) {
 		case 'X': // Gets deadzone corrected x-axis position
-			return deadZoneCorrection(joyLeft.getRawAxis(0));
+			return deadZoneCorrection(joystick.getRawAxis(0));
 		case 'Y': // Gets deadzone corrected y-axis position
-			return deadZoneCorrection(joyLeft.getRawAxis(1));
+			return deadZoneCorrection(joystick.getRawAxis(1));
 		case 'Z': // Gets deadzone corrected z-axis (rotation) position
-			return deadZoneCorrection(joyLeft.getRawAxis(2));
+			return deadZoneCorrection(joystick.getRawAxis(2));
 		case 'T': // Gets throttle position
-			return (joyLeft.getRawAxis(3) - 1) / -2;
+			return (joystick.getRawAxis(3) - 1) / -2;
 		case 'M': // Gets deadzone corrected magnitude away from origin
-			return deadZoneCorrection(joyLeft.getMagnitude());
+			return deadZoneCorrection(joystick.getMagnitude());
 		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
-			if (joyLeft.getMagnitude() > 0.1) {
-				return joyLeft.getDirectionDegrees();
+			if (joystick.getMagnitude() > 0.1) {
+				return joystick.getDirectionDegrees();
 			} else { // Returns 999 is magnitude is less than 0.1
 				return 999;
 			}
@@ -71,29 +72,4 @@ public class OI {
 			return 0.0;
 		}
 	}
-
-	// Gets double joystick values based on character argument
-	public double getRight(Character input) {
-		switch (input) {
-		case 'X': // Gets deadzone corrected x-axis position
-			return deadZoneCorrection(joyRight.getRawAxis(0));
-		case 'Y': // Gets deadzone corrected y-axis position
-			return deadZoneCorrection(joyRight.getRawAxis(1));
-		case 'Z': // Gets deadzone corrected z-axis (rotation) position
-			return deadZoneCorrection(joyRight.getRawAxis(2));
-		case 'T': // Gets throttle position
-			return (joyRight.getRawAxis(3) - 1) / -2;
-		case 'M': // Gets deadzone corrected magnitude away from origin
-			return deadZoneCorrection(joyLeft.getMagnitude());
-		case 'A': // Gets angle of joystick in degrees if magnitude is greater than 0.1
-			if (joyRight.getMagnitude() > 0.1) {
-				return joyRight.getDirectionDegrees();
-			} else { // Returns 999 is magnitude is less than 0.1
-				return 999;
-			}
-		default: // Returns 0.0 is argument is unknown
-			return 0.0;
-		}
-	}
-
 }

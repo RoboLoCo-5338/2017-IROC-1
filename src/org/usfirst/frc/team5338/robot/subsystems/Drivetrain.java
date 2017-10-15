@@ -88,17 +88,16 @@ public class Drivetrain extends Subsystem {
 	}
 
 	public void drive(OI oi) {
-		double throttle = oi.getLeft('T');
-		double magnitude = oi.getLeft('M') * throttle;
-		double rotation = oi.getLeft('Z') * throttle;
-		double shooter = oi.getRight('T');
+		double throttle = oi.get('T');
+		double magnitude = oi.get('M') * throttle;
+		double rotation = oi.get('Z') * throttle;
 		if (Robot.oi.get(OI.Button.RESET_YAW_1) && Robot.oi.get(OI.Button.RESET_YAW_2)) {
 			AHRS.zeroYaw();
 		}
 		double heading = AHRS.getYaw();
 
 		if (magnitude != 0) {
-			angle = oi.getLeft('A');
+			angle = oi.get('A');
 		}
 
 		double wheelAngle = (angle - heading);
@@ -117,7 +116,7 @@ public class Drivetrain extends Subsystem {
 				wheel.setAngleMagnitude(wheelAngle, magnitude);
 			}
 		} else {
-			rotation = oi.getRight('Z') * throttle / 2;
+			rotation = oi.get('Z') * throttle / 2;
 		}
 
 		if (!Robot.oi.get(OI.Button.NO_ROTATION)) {
