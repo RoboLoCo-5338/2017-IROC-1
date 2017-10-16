@@ -3,18 +3,18 @@ package org.usfirst.frc.team5338.robot;
 import org.usfirst.frc.team5338.robot.commands.Autonomous;
 import org.usfirst.frc.team5338.robot.subsystems.Drivetrain;
 import org.usfirst.frc.team5338.robot.subsystems.Shooter;
-import org.usfirst.frc.team5338.robot.subsystems.Winch;
+import org.usfirst.frc.team5338.robot.subsystems.Climber;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 public class Robot extends IterativeRobot {
-	// Creates the OI, DriveTrain, Shooter, and Winch objects.
+	// Creates the OI, DriveTrain, Shooter, and Climber objects.
 	public static final OI oi = new OI();
 	public static final Drivetrain drivetrain = new Drivetrain();
 	public static final Shooter shooter = new Shooter();
-	public static final Winch winch = new Winch();
+	public static final Climber climber = new Climber();
 
 	// Creates the autonomous object.
 	private static final Command autonomous = new Autonomous();

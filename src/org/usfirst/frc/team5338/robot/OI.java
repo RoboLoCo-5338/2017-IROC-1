@@ -8,7 +8,7 @@ public class OI {
 
 	// Button enum definition for all usable buttons on both controllers.
 	public enum Button {
-		NO_ROTATION, NO_TRANSLATION, SLOW_CLIMB, FAST_CLIMB, SHOOT, RESET_YAW_1, RESET_YAW_2,
+		NO_ROTATION, NO_TRANSLATION, SLOW_CLIMB, FAST_CLIMB, SHOOT, RESET_YAW_1, RESET_YAW_2, SHOOT_FARTHER, SHOOT_CLOSER
 	}
 
 	// OI object constructor.
@@ -29,10 +29,14 @@ public class OI {
 			return joystick.getRawButton(5);
 		case SHOOT: // Returns joystick button 4 status
 			return joystick.getRawButton(4);
-		case RESET_YAW_1: // Returns left joystick button 7 status
+		case RESET_YAW_1: // Returns joystick button 7 status
 			return joystick.getRawButton(7);
-		case RESET_YAW_2: // Returns left joystick button 8 status
+		case RESET_YAW_2: // Returns joystick button 8 status
 			return joystick.getRawButton(8);
+		case SHOOT_CLOSER: // Returns joystick button 9 status
+			return joystick.getRawButton(9);
+		case SHOOT_FARTHER: // Returns joystick button 10 status
+			return joystick.getRawButton(10);
 		default:
 			return false;
 		}

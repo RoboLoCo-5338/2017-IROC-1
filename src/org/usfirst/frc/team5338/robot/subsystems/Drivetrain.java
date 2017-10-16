@@ -43,35 +43,31 @@ public class Drivetrain extends Subsystem {
 	private Vector wheel3 = new Vector(0, 0);
 	private Vector wheel4 = new Vector(0, 0);
 
+	// Creates the angle object for the direction.
 	private double angle;
 
+	// Creates the AHRS object for the NavX.
 	private static final AHRS AHRS = new AHRS(SPI.Port.kMXP, (byte) (200));
 
-	// DriveTrain object constructor which configures encoders and reverses
-	// output
-	// of backwards motors.
+	// DriveTrain object constructor which configures input for encoders, configures
+	// NavX, configures output of motors, and configures the PIDs
 	public Drivetrain() {
 		super();
-
 		while (AHRS.isCalibrating() || AHRS.isMagnetometerCalibrated()) {
 		}
 		AHRS.reset();
 		AHRS.zeroYaw();
-
 		for (AnalogInput encoder : new AnalogInput[] { ENCODER_1, ENCODER_2, ENCODER_3, ENCODER_4 }) {
 			encoder.setOversampleBits(4);
 			encoder.setAverageBits(4);
 		}
-
 		for (CANTalon controller : new CANTalon[] { DRIVE_MOTOR_1, DRIVE_MOTOR_2, DRIVE_MOTOR_3, DRIVE_MOTOR_4 }) {
 			controller.setInverted(false);
 		}
-
 		for (CANTalon controller : new CANTalon[] { DRIVE_STEERING_1, DRIVE_STEERING_2, DRIVE_STEERING_3,
 				DRIVE_STEERING_4 }) {
 			controller.setInverted(true);
 		}
-
 		for (PIDController controller : new PIDController[] { PID_1, PID_2, PID_3, PID_4 }) {
 			controller.setInputRange(-180, 180);
 			controller.setContinuous(true);
@@ -99,42 +95,35 @@ public class Drivetrain extends Subsystem {
 		if (magnitude != 0) {
 			angle = oi.get('A');
 		}
-
 		double wheelAngle = (angle - heading);
 		if (wheelAngle > 180) {
 			wheelAngle -= 360;
 		} else if (wheelAngle < -180) {
 			wheelAngle += 360;
 		}
-
-		for (Vector wheel : new Vector[] { wheel1, wheel2, wheel3, wheel4 }) {
-			wheel.setMagnitude(0.0);
+		for (Vector module : new Vector[] { wheel1, wheel2, wheel3, wheel4 }) {
+			module.setMagnitude(0.0);
 		}
-
 		if (!Robot.oi.get(OI.Button.NO_TRANSLATION)) {
-			for (Vector wheel : new Vector[] { wheel1, wheel2, wheel3, wheel4 }) {
-				wheel.setAngleMagnitude(wheelAngle, magnitude);
+			for (Vector module : new Vector[] { wheel1, wheel2, wheel3, wheel4 }) {
+				module.setAngleMagnitude(wheelAngle, magnitude);
 			}
 		} else {
 			rotation = oi.get('Z') * throttle / 2;
 		}
-
 		if (!Robot.oi.get(OI.Button.NO_ROTATION)) {
 			wheel1.add(new Vector(rotation, 45));
 			wheel2.add(new Vector(rotation, 135));
 			wheel3.add(new Vector(rotation, -45));
 			wheel4.add(new Vector(rotation, -135));
 		}
-
 		if (magnitude == 0 && rotation == 0) {
 			wheel1.setAngleMagnitude(PID_1.getSetpoint(), 0);
 			wheel2.setAngleMagnitude(PID_2.getSetpoint(), 0);
 			wheel3.setAngleMagnitude(PID_3.getSetpoint(), 0);
 			wheel4.setAngleMagnitude(PID_4.getSetpoint(), 0);
 		}
-
 		normalize(wheel1, wheel2, wheel3, wheel4);
-
 		drive(wheel1, wheel2, wheel3, wheel4);
 	}
 
@@ -149,7 +138,8 @@ public class Drivetrain extends Subsystem {
 		}
 	}
 
-	// Sets output of CANTalons and PID based on the double arguments.
+	// Sets output of CANTalons and target of PIDControllers based on the double
+	// arguments.
 	public void drive(Vector one, Vector two, Vector three, Vector four) {
 		PID_1.setSetpoint(one.getAngle());
 		PID_2.setSetpoint(two.getAngle());
@@ -177,10 +167,10 @@ public class Drivetrain extends Subsystem {
 	}
 
 	class EncoderPID implements PIDSource {
-		public int encoder;
+		public int encoderIndex;
 
 		public EncoderPID(int encoder) {
-			this.encoder = encoder;
+			encoderIndex = encoder;
 		}
 
 		public void setPIDSourceType(PIDSourceType pidSource) {
@@ -192,7 +182,7 @@ public class Drivetrain extends Subsystem {
 		}
 
 		public double pidGet() {
-			return getEncoderVal(encoder);
+			return getEncoderVal(encoderIndex);
 		}
 	}
 

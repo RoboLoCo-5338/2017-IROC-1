@@ -6,10 +6,10 @@ import org.usfirst.frc.team5338.robot.commands.Climb;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class Winch extends Subsystem {
+public class Climber extends Subsystem {
 	private final VictorSP LIFT = new VictorSP(1);
 
-	public Winch() {
+	public Climber() {
 		super();
 	}
 
