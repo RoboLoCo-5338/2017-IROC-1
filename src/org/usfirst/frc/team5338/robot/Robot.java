@@ -2,7 +2,6 @@ package org.usfirst.frc.team5338.robot;
 
 import org.usfirst.frc.team5338.robot.commands.Autonomous;
 import org.usfirst.frc.team5338.robot.subsystems.Drivetrain;
-import org.usfirst.frc.team5338.robot.subsystems.Shooter;
 import org.usfirst.frc.team5338.robot.subsystems.Climber;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -13,7 +12,6 @@ public class Robot extends IterativeRobot {
 	// Creates the OI, DriveTrain, Shooter, and Climber objects.
 	public static final OI oi = new OI();
 	public static final Drivetrain drivetrain = new Drivetrain();
-	public static final Shooter shooter = new Shooter();
 	public static final Climber climber = new Climber();
 
 	// Creates the autonomous object.

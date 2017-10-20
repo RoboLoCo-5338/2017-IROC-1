@@ -1,7 +1,5 @@
 package org.usfirst.frc.team5338.robot.subsystems;
 
-import org.usfirst.frc.team5338.robot.commands.Shoot;
-
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
@@ -35,7 +33,6 @@ public class Shooter extends Subsystem {
 
 	// Sets the default command to run during teleop to joystick driving.
 	public void initDefaultCommand() {
-		setDefaultCommand(new Shoot());
 	}
 
 	// Gets joysticks input and calls the drive function with arguments.
@@ -43,9 +40,6 @@ public class Shooter extends Subsystem {
 		INTAKE.set(-0.55);
 		SHOOTER_1.changeControlMode(TalonControlMode.Speed);
 		SHOOTER_1.set(-6500);
-		//SHOOTER_2.changeControlMode(TalonControlMode.PercentVbus);
-		//SHOOTER_1.set(-1.0);
-		//SHOOTER_2.set(-1.0);
 		SmartDashboard.putNumber("Speed", SHOOTER_1.getSpeed());
 	}
 }
