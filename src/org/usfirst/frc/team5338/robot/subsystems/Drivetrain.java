@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain extends Subsystem {
 	// Creates the eight CANTalon motor controller objects.
@@ -57,13 +59,16 @@ public class Drivetrain extends Subsystem {
 		}
 		AHRS.reset();
 		AHRS.zeroYaw();
+		
 		for (AnalogInput encoder : new AnalogInput[] { ENCODER_1, ENCODER_2, ENCODER_3, ENCODER_4 }) {
 			encoder.setOversampleBits(4);
 			encoder.setAverageBits(4);
 		}
 		for (CANTalon controller : new CANTalon[] { DRIVE_MOTOR_1, DRIVE_MOTOR_2, DRIVE_MOTOR_3, DRIVE_MOTOR_4 }) {
-			controller.setInverted(false);
+			controller.setInverted(true);
 		}
+		DRIVE_MOTOR_1.setInverted(false);
+		DRIVE_MOTOR_2.setInverted(false);
 		for (CANTalon controller : new CANTalon[] { DRIVE_STEERING_1, DRIVE_STEERING_2, DRIVE_STEERING_3,
 				DRIVE_STEERING_4 }) {
 			controller.setInverted(true);
@@ -84,7 +89,13 @@ public class Drivetrain extends Subsystem {
 	}
 
 	public void drive(OI oi) {
-		double throttle = oi.get('T');
+		SmartDashboard.putNumber("Encoder1", ENCODER_1.getAverageValue());
+		SmartDashboard.putNumber("Encoder2", ENCODER_2.getAverageValue());
+		SmartDashboard.putNumber("Encoder3", ENCODER_3.getAverageValue());
+		SmartDashboard.putNumber("Encoder4", ENCODER_4.getAverageValue());
+		PowerDistributionPanel pdp = new PowerDistributionPanel(0);
+		SmartDashboard.putNumber("Current", pdp.getCurrent(12));
+		double throttle = 1;//oi.get('T');
 		double magnitude = oi.get('M') * throttle;
 		double rotation = oi.get('Z') * throttle;
 		if (Robot.oi.get(OI.Button.RESET_YAW_1) && Robot.oi.get(OI.Button.RESET_YAW_2)) {
@@ -112,8 +123,8 @@ public class Drivetrain extends Subsystem {
 			rotation = oi.get('Z') * throttle / 2;
 		}
 		if (!Robot.oi.get(OI.Button.NO_ROTATION)) {
-			wheel1.add(new Vector(rotation, 45));
-			wheel2.add(new Vector(rotation, 135));
+			wheel1.add(new Vector(rotation, -45));
+			wheel2.add(new Vector(rotation, 45));
 			wheel3.add(new Vector(rotation, -45));
 			wheel4.add(new Vector(rotation, -135));
 		}
@@ -152,7 +163,7 @@ public class Drivetrain extends Subsystem {
 	}
 
 	public double getEncoderVal(int encoder) {
-		final int[] ZERO_CONSTANTS = { 13190, 16759, 16000, 51650 };
+		final int[] ZERO_CONSTANTS = { 47957, 19554, 49005, 44697 };
 		if (encoder == 0) {
 			return (((ENCODER_1.getAverageValue() - ZERO_CONSTANTS[0] + 65535) % 65536) / 65535.0) * -360.0 + 180;
 		} else if (encoder == 1) {

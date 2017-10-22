@@ -23,12 +23,12 @@ public class OI {
 			return joystick.getRawButton(1);
 		case NO_TRANSLATION: // Returns joystick side button status
 			return joystick.getRawButton(2);
-		case SLOW_CLIMB: // Returns joystick button 3 status
-			return joystick.getRawButton(3);
-		case FAST_CLIMB: // Returns joystick button 5 status
-			return joystick.getRawButton(5);
-		case SHOOT: // Returns joystick button 4 status
+		case SLOW_CLIMB: // Returns joystick button 4 status
 			return joystick.getRawButton(4);
+		case FAST_CLIMB: // Returns joystick button 6 status
+			return joystick.getRawButton(6);
+		case SHOOT: // Returns joystick button 3 status
+			return joystick.getRawButton(3);
 		case RESET_YAW_1: // Returns joystick button 7 status
 			return joystick.getRawButton(7);
 		case RESET_YAW_2: // Returns joystick button 8 status
